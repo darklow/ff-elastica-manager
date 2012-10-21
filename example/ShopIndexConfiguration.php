@@ -6,9 +6,11 @@ use FF\ElasticaManager\IndexConfiguration;
 
 class ShopIndexConfiguration extends IndexConfiguration
 {
-	public function getDefaultName()
+	const NAME = 'shop';
+
+	public function getName()
 	{
-		return 'shop';
+		return self::NAME;
 	}
 
 	public function getTypes()
@@ -80,7 +82,7 @@ class ShopIndexConfiguration extends IndexConfiguration
 				break;
 			case 'dvd':
 				$array += array(
-					'releasedAt' => array('type' => 'date'),
+					'released' => array('type' => 'date'),
 				);
 				break;
 		}
