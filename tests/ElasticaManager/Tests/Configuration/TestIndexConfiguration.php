@@ -1,14 +1,16 @@
 <?php
-namespace Example;
+namespace ElasticaManager\Tests\Configuration;
 
 use Elastica_Type;
 use FF\ElasticaManager\IndexConfiguration;
 
-class ShopIndexConfiguration extends IndexConfiguration
+class TestIndexConfiguration extends IndexConfiguration
 {
-	public function getDefaultName()
+	const NAME = 'eim_test_shop';
+
+	public function getName()
 	{
-		return 'shop';
+		return self::NAME;
 	}
 
 	public function getTypes()
@@ -80,7 +82,7 @@ class ShopIndexConfiguration extends IndexConfiguration
 				break;
 			case 'dvd':
 				$array += array(
-					'releasedAt' => array('type' => 'date'),
+					'released' => array('type' => 'date'),
 				);
 				break;
 		}

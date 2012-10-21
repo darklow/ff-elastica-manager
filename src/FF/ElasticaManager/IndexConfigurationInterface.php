@@ -5,9 +5,7 @@ use Elastica_Type;
 
 interface IndexConfigurationInterface
 {
-	public function __construct($name = null);
-
-	public function getDefaultName();
+	//public function __construct();
 
 	public function getName();
 
