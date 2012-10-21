@@ -1,0 +1,24 @@
+{
+    "name": "darklow/ff-elastica-manager",
+    "type": "library",
+    "description": "Elastica manager for creating, rotating, populating and managing ElasticSearch indexes using Elastica client library",
+    "keywords": ["elastica", "elasticsearch", "manager"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Kaspars Sprogis",
+            "email": "darklow@gmail.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0",
+        "ruflin/Elastica": "dev-master"
+    },
+    "autoload": {
+        "psr-0": {
+            "FF": "src"
+        }
+    },
+    "minimum-stability": "dev"
+}
