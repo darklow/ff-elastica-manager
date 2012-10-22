@@ -8,6 +8,7 @@ Complete
 -------
 
 Methods: create, delete, populate
+
 Examples: ShopIndexConfiguration.php, ShopIndexDataProvider.php
 
 
@@ -15,6 +16,7 @@ Todo
 -------
 
 Methods: rotate, copy
+
 Examples: ElasticaSymfonyCommand.php
 
 
