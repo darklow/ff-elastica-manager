@@ -51,7 +51,7 @@ $client  = new Elastica_Client(array(
 ));
 
 // Create Elastica manager
-$elasticaManager = new ElasticaManager($this->client);
+$elasticaManager = new ElasticaManager($client);
 ```
 
 Now you have to create Configuration and DataProvider classes for you index.
@@ -91,7 +91,7 @@ Now you have $indexManager and you can start using it's methods
 
 ## Methods
 
-#### Create index
+### Create index
 
 Following line will create new index or throw an exception if index will already exist
 
@@ -106,6 +106,24 @@ You can set $dropIfExists argument for create() to TRUE if you wish to avoid exc
 <?php
 $index = $indexManager->create(true);
 ```
+
+### Delete index
+
+```php
+<?php
+$index = $indexManager->delete();
+```
+
+**Note:** Method will throw `ElasticaManagerIndexNotFoundException` if index will not be found. Use next method indexExists() to verify before calling delete()
+
+
+### Index Exists
+
+```php
+<?php
+$index = $indexManager->indexExists();
+```
+
 
 
 ## License
