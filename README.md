@@ -71,6 +71,10 @@ Now you have successfully setup ElasticaManager you can get IndexManager using f
     // or you could use configuration constant
     $indexManager = $elasticaManager->getIndexManager(ShopConfiguration::NAME);
 
+**Note:** If you want to use different name for your index, rather than configuration name, specify it as second parameter for getIndexManager()
+
+    $indexManager = $elasticaManager->getIndexManager(ShopConfiguration::NAME, 'custom_index_name');
+
 
 Now you have $indexManager and you can start using it's methods
 
@@ -82,11 +86,11 @@ Following line will create new index or throw an exception if index will already
 
     $index = $indexManager->create();
     
-You can set argument create() $dropIfExists to TRUE if you wish to avoid exception and drop existing index
+You can set $dropIfExists argument for create() to TRUE if you wish to avoid exception and drop existing index
 
     $index = $indexManager->create(true);
 
-License
--------
+
+## License
 
 'FF-Elastica-Manager' is licensed under the MIT license.
