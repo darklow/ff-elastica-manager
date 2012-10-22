@@ -38,18 +38,21 @@ and run:
 
 Use following steps to start using elastica manager
 
-    // Create client
-    $client  = new Elastica_Client(array(
-        'servers' => array(
-            array(
-                'host' => '192.168.0.223',
-                'port' => 9200
-            )
+```php
+<?php
+// Create client
+$client  = new Elastica_Client(array(
+    'servers' => array(
+        array(
+            'host' => '192.168.0.223',
+            'port' => 9200
         )
-    ));
-    
-    // Create Elastica manager
-    $elasticaManager = new ElasticaManager($this->client);
+    )
+));
+
+// Create Elastica manager
+$elasticaManager = new ElasticaManager($this->client);
+```
 
 Now you have to create Configuration and DataProvider classes for you index.
 
@@ -57,24 +60,32 @@ You will find ShopConfiguration and ShopDataProvider example classes in [example
 
 Once you create these classes you can add them to elastica manager
 
-    // Create your index configuration with data provider
-    $provider = new ShopDataProvider();
-    $configuration = new ShopConfiguration($provider);
-    
-    // Add configuration(s) to the manager
-    $elasticaManager->addConfiguration($configuration);
+```php
+<?php
+// Create your index configuration with data provider
+$provider = new ShopDataProvider();
+$configuration = new ShopConfiguration($provider);
+
+// Add configuration(s) to the manager
+$elasticaManager->addConfiguration($configuration);
+```
 
 Now you have successfully setup ElasticaManager you can get IndexManager using following code:
 
-    $indexManager = $elasticaManager->getIndexManager('shop');
-    
-    // or you could use configuration constant
-    $indexManager = $elasticaManager->getIndexManager(ShopConfiguration::NAME);
+```php
+<?php
+$indexManager = $elasticaManager->getIndexManager('shop');
+
+// or you could use configuration constant
+$indexManager = $elasticaManager->getIndexManager(ShopConfiguration::NAME);
+```
 
 **Note:** If you want to use different name for your index, rather than configuration name, specify it as second parameter for getIndexManager()
 
-    $indexManager = $elasticaManager->getIndexManager(ShopConfiguration::NAME, 'custom_index_name');
-
+```php
+<?php
+$indexManager = $elasticaManager->getIndexManager(ShopConfiguration::NAME, 'custom_index_name');
+```
 
 Now you have $indexManager and you can start using it's methods
 
@@ -84,11 +95,17 @@ Now you have $indexManager and you can start using it's methods
 
 Following line will create new index or throw an exception if index will already exist
 
-    $index = $indexManager->create();
+```php
+<?php
+$index = $indexManager->create();
+```
     
 You can set $dropIfExists argument for create() to TRUE if you wish to avoid exception and drop existing index
 
-    $index = $indexManager->create(true);
+```php
+<?php
+$index = $indexManager->create(true);
+```
 
 
 ## License
