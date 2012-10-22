@@ -5,8 +5,8 @@ use Elastica_Client;
 use Elastica_Index;
 use FF\ElasticaManager\IndexManager;
 use FF\ElasticaManager\ElasticaManager;
-use ElasticaManager\Tests\Configuration\TestIndexDataProvider;
-use ElasticaManager\Tests\Configuration\TestIndexConfiguration;
+use ElasticaManager\Tests\Configuration\TestDataProvider;
+use ElasticaManager\Tests\Configuration\TestConfiguration;
 
 abstract class ElasticaManagerTestBase extends \PHPUnit_Framework_TestCase
 {
@@ -22,11 +22,11 @@ abstract class ElasticaManagerTestBase extends \PHPUnit_Framework_TestCase
 	protected function setUp()
 	{
 		$this->client  = new Elastica_Client($this->getClientConfig());
-		$configuration = new TestIndexConfiguration(new TestIndexDataProvider());
+		$configuration = new TestConfiguration(new TestDataProvider());
 
 		$this->elasticaManager = new ElasticaManager($this->client);
 		$this->elasticaManager->addConfiguration($configuration);
-		$this->indexManager = $this->elasticaManager->getIndexManager(TestIndexConfiguration::NAME);
+		$this->indexManager = $this->elasticaManager->getIndexManager(TestConfiguration::NAME);
 	}
 
 	protected function tearDown()
@@ -52,7 +52,7 @@ abstract class ElasticaManagerTestBase extends \PHPUnit_Framework_TestCase
 	 */
 	protected function _getIndexManager($indexName = null)
 	{
-		$configuration = new TestIndexConfiguration(new TestIndexDataProvider());
+		$configuration = new TestConfiguration(new TestDataProvider());
 		$indexName     = $indexName ? : $configuration->getName();
 		return new IndexManager($this->client, $configuration, $indexName);
 	}

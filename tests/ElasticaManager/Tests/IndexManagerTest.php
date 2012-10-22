@@ -4,8 +4,8 @@ namespace ElasticaManager\Tests;
 use Elastica_Client;
 use Elastica_Type;
 use Elastica_Index;
-use ElasticaManager\Tests\Configuration\TestIndexDataProvider;
-use ElasticaManager\Tests\Configuration\TestIndexConfiguration;
+use ElasticaManager\Tests\Configuration\TestDataProvider;
+use ElasticaManager\Tests\Configuration\TestConfiguration;
 use FF\ElasticaManager\ElasticaManager;
 use FF\ElasticaManager\IndexManager;
 
@@ -13,7 +13,7 @@ class IndexManagerTest extends ElasticaManagerTestBase
 {
 	public function testConstruct()
 	{
-		$configuration = new TestIndexConfiguration(new TestIndexDataProvider());
+		$configuration = new TestConfiguration(new TestDataProvider());
 		$indexName     = $configuration->getName();
 		$indexManager  = new IndexManager($this->client, $configuration, $indexName);
 		$this->assertEquals($this->indexManager, $indexManager);
@@ -29,7 +29,7 @@ class IndexManagerTest extends ElasticaManagerTestBase
 
 	public function testCreateIndex()
 	{
-		$indexName = TestIndexConfiguration::NAME;
+		$indexName = TestConfiguration::NAME;
 		$index     = $this->indexManager->create(true);
 		$newIndex  = new Elastica_Index($this->client, $indexName);
 		$this->assertEquals($newIndex, $index);
@@ -64,7 +64,7 @@ class IndexManagerTest extends ElasticaManagerTestBase
 
 	public function testCreateIndexDifferentName()
 	{
-		$indexName    = TestIndexConfiguration::NAME.'_diff';
+		$indexName    = TestConfiguration::NAME.'_diff';
 		$indexManager = $this->_getIndexManager($indexName);
 		$indexManager->create(true);
 
@@ -77,7 +77,7 @@ class IndexManagerTest extends ElasticaManagerTestBase
 
 	public function testSetMapping()
 	{
-		$indexName    = TestIndexConfiguration::NAME.'_mapping_test';
+		$indexName    = TestConfiguration::NAME.'_mapping_test';
 		$indexManager = $this->_getIndexManager($indexName);
 		$index        = $indexManager->create(true);
 		$mapping      = $index->getMapping();
@@ -97,7 +97,7 @@ class IndexManagerTest extends ElasticaManagerTestBase
 
 	public function testPopulateAll()
 	{
-		$indexName = TestIndexConfiguration::NAME.'_populate_test';
+		$indexName = TestConfiguration::NAME.'_populate_test';
 		$indexManager = $this->_getIndexManager($indexName);
 
 		$test    = $this;

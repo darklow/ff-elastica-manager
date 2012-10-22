@@ -3,7 +3,7 @@ namespace FF\ElasticaManager;
 
 use FF\ElasticaManager\DataProviderDocument;
 
-interface IndexDataProviderInterface
+interface DataProviderInterface
 {
 	/**
 	 * Get iterable result/array

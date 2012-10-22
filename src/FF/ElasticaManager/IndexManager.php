@@ -19,7 +19,7 @@ class IndexManager
 	/** @var Elastica_Client */
 	protected $client;
 
-	/** @var IndexConfiguration */
+	/** @var Configuration */
 	protected $configuration;
 
 	/** @var Elastica_Status */
@@ -32,10 +32,10 @@ class IndexManager
 
 	/**
 	 * @param Elastica_Client $client
-	 * @param IndexConfiguration $configuration
+	 * @param Configuration $configuration
 	 * @param $indexName
 	 */
-	function __construct(Elastica_Client $client, IndexConfiguration $configuration, $indexName)
+	function __construct(Elastica_Client $client, Configuration $configuration, $indexName)
 	{
 		$this->client        = $client;
 		$this->configuration = $configuration;
@@ -51,7 +51,7 @@ class IndexManager
 	}
 
 	/**
-	 * @return IndexDataProvider
+	 * @return DataProvider
 	 */
 	public function getProvider()
 	{
@@ -59,7 +59,7 @@ class IndexManager
 	}
 
 	/**
-	 * @return IndexConfiguration
+	 * @return Configuration
 	 */
 	public function getConfiguration()
 	{

@@ -1,10 +1,10 @@
 <?php
 namespace ElasticaManager\Tests\Configuration;
 
-use FF\ElasticaManager\IndexDataProvider;
+use FF\ElasticaManager\DataProvider;
 use FF\ElasticaManager\DataProviderDocument;
 
-class TestIndexDataProvider extends IndexDataProvider
+class TestDataProvider extends DataProvider
 {
 	protected $total;
 

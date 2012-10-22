@@ -2,9 +2,9 @@
 namespace ElasticaManager\Tests\Configuration;
 
 use Elastica_Type;
-use FF\ElasticaManager\IndexConfiguration;
+use FF\ElasticaManager\Configuration;
 
-class TestIndexConfiguration extends IndexConfiguration
+class TestConfiguration extends Configuration
 {
 	const NAME = 'eim_test_shop';
 

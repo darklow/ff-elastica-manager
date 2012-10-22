@@ -3,9 +3,9 @@ namespace FF\ElasticaManager;
 
 use Elastica_Type;
 
-interface IndexConfigurationInterface
+interface ConfigurationInterface
 {
-	public function __construct(IndexDataProvider $provider);
+	public function __construct(DataProvider $provider);
 
 	public function getName();
 

@@ -9,7 +9,7 @@ Complete
 
 Methods: create, delete, populate
 
-Examples: ShopIndexConfiguration.php, ShopIndexDataProvider.php
+Examples: ShopConfiguration.php, ShopDataProvider.php
 
 
 Todo

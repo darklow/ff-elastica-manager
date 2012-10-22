@@ -8,10 +8,10 @@ class ElasticaManager
 	/** @var Elastica_Client */
 	protected $client;
 
-	/** @var IndexConfiguration[] */
+	/** @var Configuration[] */
 	protected $configurations;
 
-	/** @var IndexDataProvider[] */
+	/** @var DataProvider[] */
 	protected $providers;
 
 	/** @var IndexManager[] */
@@ -30,14 +30,14 @@ class ElasticaManager
 		return $this->client;
 	}
 
-	public function addConfiguration(IndexConfiguration $configuration)
+	public function addConfiguration(Configuration $configuration)
 	{
 		$this->configurations[$configuration->getName()] = $configuration;
 	}
 
 	/**
 	 * @param $configurationName
-	 * @return IndexConfiguration
+	 * @return Configuration
 	 */
 	public function getConfiguration($configurationName)
 	{

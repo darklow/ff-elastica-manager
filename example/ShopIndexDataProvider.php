@@ -1,10 +1,10 @@
 <?php
 namespace Example;
 
-use FF\ElasticaManager\IndexDataProvider;
+use FF\ElasticaManager\DataProvider;
 use FF\ElasticaManager\DataProviderDocument;
 
-class ShopIndexDataProvider extends IndexDataProvider
+class ShopDataProvider extends DataProvider
 {
 	protected $total;
 

@@ -2,9 +2,9 @@
 namespace Example;
 
 use Elastica_Type;
-use FF\ElasticaManager\IndexConfiguration;
+use FF\ElasticaManager\Configuration;
 
-class ShopIndexConfiguration extends IndexConfiguration
+class ShopConfiguration extends Configuration
 {
 	const NAME = 'shop';
 

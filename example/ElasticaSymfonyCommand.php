@@ -89,8 +89,8 @@ class ElasticaCommand extends Command
 				)
 			)
 		));
-		$configuration = new ShopIndexConfiguration();
-		$provider      = new ShopIndexDataProvider();
+		$configuration = new ShopConfiguration();
+		$provider      = new ShopDataProvider();
 		return new ElasticaIndexManager($client, $configuration, $provider);
 	}
 
