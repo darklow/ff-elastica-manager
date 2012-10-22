@@ -36,4 +36,10 @@ class ElasticaManagerTest extends ElasticaManagerTestBase
 		$this->assertEquals($indexManager, $this->indexManager);
 		$this->assertEquals($this->elasticaManager, $this->elasticaManager);
 	}
+
+	public function testGetIndexManagerByWrongName()
+	{
+		$this->setExpectedException('InvalidArgumentException');
+		$this->elasticaManager->getIndexManager('eim_wrong_name_test');
+	}
 }
