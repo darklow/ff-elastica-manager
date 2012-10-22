@@ -1,7 +1,7 @@
 <?php
 namespace FF\ElasticaManager;
 
-use Elastica_Type;
+use FF\ElasticaManager\DataProviderDocument;
 
 interface IndexDataProviderInterface
 {
@@ -40,10 +40,12 @@ interface IndexDataProviderInterface
 	public function getDocumentData($id);
 
 	/**
-	 * Converts result iterator row to array containing three required keys: id, type, json
+	 * Converts result iterator row to DataProviderDocument
+	 * If indexManager->populate($typeName = null) is called with $typeName argument, then typeName is forwarded to this method too
 	 *
 	 * @param $data
-	 * @return array Array('id' => DocumentID, 'type' => TypeName, 'json' => JsonDataArray)
+	 * @param null $typeName
+	 * @return DataProviderDocument
 	 */
-	public function iterationRowTransform($data);
+	public function iterationRowTransform($data, $typeName = null);
 }

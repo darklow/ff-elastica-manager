@@ -210,13 +210,14 @@ class IndexManager
 			$closure and $closure($i, $total);
 			$providerClosure and $providerClosure($i, $total);
 
-			$data = $this->getProvider()->iterationRowTransform($data);
-			if (!isset($data['id'], $data['type'], $data['json'])) {
+			$providerDoc = $this->getProvider()->iterationRowTransform($data, $typeName);
+
+			if (!$providerDoc instanceof DataProviderDocument) {
 				throw new ElasticaManagerProviderTransformException($this->getIndexName());
 			}
 
-			$doc  = new Elastica_Document($data['id'], $data['json']);
-			$type = $this->getType($elasticaIndex, $data['type']);
+			$doc  = new Elastica_Document($providerDoc->getId(), $providerDoc->getData());
+			$type = $this->getType($elasticaIndex, $providerDoc->getTypeName());
 			$type->addDocument($doc);
 
 			$i++;

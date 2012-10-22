@@ -5,7 +5,7 @@ class ElasticaManagerProviderTransformException extends \Exception
 {
 	public function __construct($indexName)
 	{
-		$message = 'Index "'.$indexName.'" provider\'s iterationRowTransform() method must return array containing required keys: id, type, json';
+		$message = 'Index "'.$indexName.'" provider\'s iterationRowTransform() method must return DataProviderDocument object';
 		parent::__construct($message);
 	}
 }

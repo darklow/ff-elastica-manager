@@ -2,6 +2,7 @@
 namespace ElasticaManager\Tests\Configuration;
 
 use FF\ElasticaManager\IndexDataProvider;
+use FF\ElasticaManager\DataProviderDocument;
 
 class TestIndexDataProvider extends IndexDataProvider
 {
@@ -66,12 +67,10 @@ class TestIndexDataProvider extends IndexDataProvider
 	/**
 	 * {@inheritDoc}
 	 */
-	public function iterationRowTransform($data)
+	public function iterationRowTransform($data, $typeName = null)
 	{
-		$id       = $data['id'];
-		$typeName = $data['type'];
-		unset($data['id'], $data['type']);
-
-		return array('id' => $id, 'type' => $typeName, 'json' => $data);
+		$finalData = $data;
+		unset($finalData['id'], $finalData['type']);
+		return new DataProviderDocument($data['id'], $data['type'], $finalData);
 	}
 }
