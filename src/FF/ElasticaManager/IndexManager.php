@@ -142,7 +142,9 @@ class IndexManager
 			$mapping->setType($type);
 
 			// Set properties
-			$mapping->setProperties($this->configuration->getMappingProperties($type));
+			if ($properties = $this->configuration->getMappingProperties($type)) {
+				$mapping->setProperties($properties);
+			}
 
 			// Set params if any
 			if ($mappingParams = $this->configuration->getMappingParams($type)) {
