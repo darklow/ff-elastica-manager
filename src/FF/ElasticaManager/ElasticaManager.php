@@ -37,10 +37,14 @@ class ElasticaManager
 
 	/**
 	 * @param $configurationName
+	 * @throws \InvalidArgumentException
 	 * @return Configuration
 	 */
 	public function getConfiguration($configurationName)
 	{
+		if(!isset($this->configurations[$configurationName])) {
+			throw new \InvalidArgumentException("Configuration by name \"$configurationName\" doesn't exist");
+		}
 		return $this->configurations[$configurationName];
 	}
 
