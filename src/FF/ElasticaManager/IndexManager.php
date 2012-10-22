@@ -160,7 +160,7 @@ class IndexManager
 	 * @throws ElasticaManagerIndexNotFoundException
 	 * @return Elastica_Index
 	 */
-	protected function getIndex($createIfMissing = false)
+	public function getIndex($createIfMissing = false)
 	{
 		if (!$this->indexExists($this->indexName)) {
 			if (!$createIfMissing) {
