@@ -38,9 +38,11 @@ and run:
 
 Use following steps to start using elastica manager
 
+### 1) Create Elastica_Client and ElasticaManager
+
 ```php
 <?php
-// Create client
+// Create Elastica_Client
 $client  = new Elastica_Client(array(
     'servers' => array(
         array(
@@ -53,6 +55,8 @@ $client  = new Elastica_Client(array(
 // Create Elastica manager
 $elasticaManager = new ElasticaManager($client);
 ```
+
+### 2) Configuration and DataProvider classes
 
 Now you have to create Configuration and DataProvider classes for you index.
 
@@ -69,6 +73,8 @@ $configuration = new ShopConfiguration($provider);
 // Add configuration(s) to the manager
 $elasticaManager->addConfiguration($configuration);
 ```
+
+### 3) Get IndexManager
 
 Now you have successfully setup ElasticaManager you can get IndexManager using following code:
 
