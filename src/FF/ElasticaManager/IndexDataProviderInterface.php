@@ -6,30 +6,44 @@ use Elastica_Type;
 interface IndexDataProviderInterface
 {
 	/**
-	 * Get iteratable result/array
+	 * Get iterable result/array
 	 *
 	 * @param $typeName
-	 * @param null|int $total
-	 * @param null $providerClosure
 	 * @return array
 	 */
-	public function getData($typeName = null, &$total = null, &$providerClosure = null);
+	public function getData($typeName = null);
+
+	/**
+	 * Get count of documents. Optional method. Used for closures.
+	 * This method is always called after getData() method
+	 * Therefore you can add some class level variable for storing $total
+	 *
+	 * @param null $typeName
+	 * @return int
+	 */
+	public function getTotal($typeName = null);
+
+	/**
+	 * Define closure for data provider if needed. Useful for some memory clear for entity managers etc.
+	 * Closure receives two arguments iterator index and total count: function ($i, $total)
+	 *
+	 * @return \Closure|null
+	 */
+	public function getIterationClosure();
 
 	/**
 	 * Get data for one document
 	 *
 	 * @param $id
-	 * @param null $typeName
 	 * @return array
 	 */
-	public function getDocumentData($id, &$typeName = null);
+	public function getDocumentData($id);
 
 	/**
-	 * Converts result iterator row to document json array
+	 * Converts result iterator row to array containing three required keys: id, type, json
+	 *
 	 * @param $data
-	 * @param string|null $typeName
-	 * @param $id
-	 * @return array
+	 * @return array Array('id' => DocumentID, 'type' => TypeName, 'json' => JsonDataArray)
 	 */
-	public function dataToArray($data, &$typeName = null, &$id = null);
+	public function iterationRowTransform($data);
 }

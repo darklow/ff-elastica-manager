@@ -5,7 +5,7 @@ use Elastica_Type;
 
 interface IndexConfigurationInterface
 {
-	//public function __construct();
+	public function __construct(IndexDataProvider $provider);
 
 	public function getName();
 

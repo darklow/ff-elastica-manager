@@ -2,6 +2,9 @@
 namespace FF\ElasticaManager;
 
 use Elastica_Client;
+use FF\ElasticaManager\Exception\ElasticaManagerProviderTransformException;
+use FF\ElasticaManager\Exception\ElasticaManagerProviderIteratorException;
+use FF\ElasticaManager\Exception\ElasticaManagerNoProviderDataException;
 use Elastica_Document;
 use FF\ElasticaManager\Exception\ElasticaManagerIndexExistsException;
 use FF\ElasticaManager\Exception\ElasticaManagerIndexNotFoundException;
@@ -11,7 +14,7 @@ use Elastica_Status;
 use Elastica_Type;
 use Elastica_Type_Mapping;
 
-class ElasticaIndexManager
+class IndexManager
 {
 	/** @var Elastica_Client */
 	protected $client;
@@ -19,26 +22,24 @@ class ElasticaIndexManager
 	/** @var IndexConfiguration */
 	protected $configuration;
 
-	/** @var IndexDataProvider */
-	protected $provider;
-
 	/** @var Elastica_Status */
 	protected $status;
 
 	/** @var Elastica_Type[] */
 	protected $types;
 
-	/** @var Elastica_Index */
-	protected $index;
-
 	protected $indexName;
 
-	function __construct(Elastica_Client $client, IndexConfiguration $configuration, IndexDataProvider $provider)
+	/**
+	 * @param Elastica_Client $client
+	 * @param IndexConfiguration $configuration
+	 * @param $indexName
+	 */
+	function __construct(Elastica_Client $client, IndexConfiguration $configuration, $indexName)
 	{
 		$this->client        = $client;
 		$this->configuration = $configuration;
-		$this->provider      = $provider;
-		$this->indexName     = $this->configuration->getName();
+		$this->indexName     = $indexName;
 	}
 
 	/**
@@ -54,7 +55,7 @@ class ElasticaIndexManager
 	 */
 	public function getProvider()
 	{
-		return $this->provider;
+		return $this->getConfiguration()->getProvider();
 	}
 
 	/**
@@ -65,30 +66,28 @@ class ElasticaIndexManager
 		return $this->configuration;
 	}
 
+	/**
+	 * @return string|null
+	 */
 	public function getIndexName()
 	{
 		return $this->indexName;
 	}
 
-	public function setIndexName($indexName)
-	{
-		$this->indexName = $indexName;
-	}
-
 	/**
-	 * @param bool $recreteIfExists
+	 * @param bool $dropIfExists
 	 * @internal param $configurationName
 	 * @throws ElasticaManagerIndexExistsException
 	 * @return Elastica_Index
 	 */
-	public function createIndex($recreteIfExists = false)
+	public function create($dropIfExists = false)
 	{
-		if (!$recreteIfExists && $this->indexExists()) {
+		if (!$dropIfExists && $this->indexExists()) {
 			throw new ElasticaManagerIndexExistsException($this->indexName);
 		}
 
 		$elasticaIndex = $this->client->getIndex($this->indexName);
-		$elasticaIndex->create($this->configuration->getConfig(), $recreteIfExists);
+		$elasticaIndex->create($this->configuration->getConfig(), $dropIfExists);
 		$this->setMapping($elasticaIndex);
 		$this->refreshStatus();
 
@@ -98,13 +97,17 @@ class ElasticaIndexManager
 	/**
 	 * @return Elastica_Response
 	 */
-	public function deleteIndex()
+	public function delete()
 	{
 		$deleteResponse = $this->getIndex(false)->delete();
 		$this->refreshStatus();
 		return $deleteResponse;
 	}
 
+	/**
+	 * @param string|null $indexName
+	 * @return bool
+	 */
 	public function indexExists($indexName = null)
 	{
 		return $this->getStatus()->indexExists($indexName ? : $this->indexName);
@@ -118,6 +121,9 @@ class ElasticaIndexManager
 		return $this->status ? : $this->status = new Elastica_Status($this->client);
 	}
 
+	/**
+	 * Refresh elastica status
+	 */
 	protected function refreshStatus()
 	{
 		if ($this->status) {
@@ -160,7 +166,7 @@ class ElasticaIndexManager
 			if (!$createIfMissing) {
 				throw new ElasticaManagerIndexNotFoundException($this->indexName);
 			}
-			$elasticaIndex = $this->createIndex();
+			$elasticaIndex = $this->create();
 		} else {
 			$elasticaIndex = $this->client->getIndex($this->indexName);
 		}
@@ -172,30 +178,45 @@ class ElasticaIndexManager
 	 * @param null $typeName
 	 * @param callable|null $closure
 	 * @param bool $deleteIfExists
+	 * @throws ElasticaManagerProviderIteratorException
+	 * @throws ElasticaManagerNoProviderDataException
+	 * @throws ElasticaManagerProviderTransformException
 	 * @return Elastica_Index
 	 */
 	public function populate($typeName = null, \Closure $closure = null, $deleteIfExists = true)
 	{
-		if ($deleteIfExists) {
-			$this->deleteIndex();
+		if ($deleteIfExists && $this->indexExists()) {
+			$this->delete();
 		}
 
 		$elasticaIndex = $this->getIndex(true);
 
-		$iterableResult = $this->provider->getData($typeName, $total, $providerClosure);
+		$provider        = $this->getProvider();
+		$iterableResult  = $provider->getData($typeName);
+		$total           = $provider->getTotal($typeName);
+		$providerClosure = $provider->getIterationClosure();
+
 		if (!$iterableResult) {
-			return;
+			throw new ElasticaManagerNoProviderDataException($this->getIndexName());
+		}
+
+		if (!is_array($iterableResult) && !$iterableResult instanceof \Traversable) {
+			throw new ElasticaManagerProviderIteratorException($this->getIndexName());
 		}
 
 		$i = 0;
-		foreach ($iterableResult as $dataKey => $data) {
+		foreach ($iterableResult as $data) {
 
 			$closure and $closure($i, $total);
 			$providerClosure and $providerClosure($i, $total);
 
-			$data = $this->provider->dataToArray($data, $typeName, $id);
-			$doc  = new Elastica_Document($id ? : $dataKey, $data);
-			$type = $this->getType($elasticaIndex, $typeName);
+			$data = $this->getProvider()->iterationRowTransform($data);
+			if (!isset($data['id'], $data['type'], $data['json'])) {
+				throw new ElasticaManagerProviderTransformException($this->getIndexName());
+			}
+
+			$doc  = new Elastica_Document($data['id'], $data['json']);
+			$type = $this->getType($elasticaIndex, $data['type']);
 			$type->addDocument($doc);
 
 			$i++;
@@ -205,6 +226,31 @@ class ElasticaIndexManager
 		$elasticaIndex->refresh();
 
 		return $elasticaIndex;
+	}
+
+	public function copy(\Closure $closure = null, $limit = null)
+	{
+	}
+
+	public function addAlias($aliasName, $replace = false)
+	{
+		$this->getIndex()->addAlias($aliasName, $replace);
+	}
+
+	public function hasAlias($aliasName)
+	{
+		return $this->getStatus()->aliasExists($aliasName);
+	}
+
+	public function removeAlias($aliasName)
+	{
+		$status = static::getStatus();
+
+		/** @var $indexesWithAlias Elastica_index[] */
+		$indexesWithAlias = $status->getIndicesWithAlias($aliasName);
+		foreach ($indexesWithAlias as $indexWithAlias) {
+			$indexWithAlias->removeAlias($aliasName);
+		}
 	}
 
 	/**

@@ -5,10 +5,12 @@ use FF\ElasticaManager\IndexDataProvider;
 
 class TestIndexDataProvider extends IndexDataProvider
 {
+	protected $total;
+
 	/**
 	 * {@inheritDoc}
 	 */
-	public function getData($typeName = null, &$total = null, &$providerClosure = null)
+	public function getData($typeName = null)
 	{
 		$data = array(
 			array(
@@ -44,32 +46,32 @@ class TestIndexDataProvider extends IndexDataProvider
 		}
 
 		// Set total
-		$total = count($data);
-
-		// Do some memory clear in provider closure if needed
-		$providerClosure = function ($i, $total) {
-		};
+		$this->total = count($data);
 
 		return $data;
+	}
+
+	public function getTotal($typeName = null)
+	{
+		return $this->total;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public function getDocumentData($id, &$typeName = null)
+	public function getDocumentData($id)
 	{
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public function dataToArray($data, &$typeName = null, &$id = null)
+	public function iterationRowTransform($data)
 	{
 		$id       = $data['id'];
 		$typeName = $data['type'];
-
 		unset($data['id'], $data['type']);
 
-		return $data;
+		return array('id' => $id, 'type' => $typeName, 'json' => $data);
 	}
 }
