@@ -1,23 +1,20 @@
 FF-Elastica-Manager
 ================
 
-Elastica manager for creating, rotating, populating and managing ElasticSearch indexes using Elastica client library
+FF-Elastica-Manager is php library for creating, rotating, populating and managing ElasticSearch indexes using [Elastica client](https://github.com/ruflin/Elastica) library.
 
+### Work in progress
 
-Complete
--------
-Methods: create, delete, populate
+This package is still under development, however these methods are already implemented:
 
-Examples: ShopConfiguration.php, ShopDataProvider.php
+* create index
+* populate index
+* delete index
+* index exists
+* addAlias, removeAlias
+* examples: ShopConfiguration.php, ShopDataProvider.php [Go to example directory](https://github.com/darklow/ff-elastica-manager/tree/master/example)
 
-
-Todo
--------
-
-Methods: rotate, copy
-
-Examples: ElasticaSymfonyCommand.php
-
+**Todo**: Index copy, index rotate (copy and change alias), Symfony2 Command example
 
 ## Installation
 The recommended way to install package is [through composer](http://getcomposer.org). Create a `composer.json` in your project root-directory:
@@ -28,110 +25,62 @@ The recommended way to install package is [through composer](http://getcomposer.
         }
     }
 
-and run:
-
-    curl -s http://getcomposer.org/installer | php
-    php composer.phar install
+and run ```curl -s http://getcomposer.org/installer | php``` to get composer or run ```php composer.phar install``` to install package
 
 
-## Getting started
+## Overview
 
-Use following steps to start using elastica manager
+ElasticaManager package contains two classes:
 
-### 1) Create Elastica_Client and ElasticaManager
+1. **ElasticaManager** - working with indexes and elasticsearch server
+2. **IndexManager** - create, delete, manage specific index
 
-```php
-<?php
-// Create Elastica_Client
-$client  = new Elastica_Client(array(
-    'servers' => array(
-        array(
-            'host' => '192.168.0.223',
-            'port' => 9200
-        )
-    )
-));
+For every index you want to manage, you have to create two classes:
 
-// Create Elastica manager
-$elasticaManager = new ElasticaManager($client);
-```
+1. **Configuration** - Configuration class which provides necessary info for ElasticSearch index:
+    * Index default name - default name of the index (can be overridden on IndexManager initiation)
+    * Index types - ElasticSearch index type name(s)
+    * Index configuration - number of shards and replicas, analysis analyzers and filters
+    * Mapping properties - fields and its types for each/all ElasticSearch type
+    * Mapping params - params like ```_all => [ enabled => false]``` and so on
 
-### 2) Configuration and DataProvider classes
+2. **DataProvider** - Data provider class which provides all the data needed to populate whole index or just one document.
+Following methods must be implemented:
 
-Now you have to create Configuration and DataProvider classes for you index.
+    * getData($typeName = null) - Method must return iterable result/array for all the data or one type only if specified
+    * iterationRowTransform($data, $typeName = null) - Method must return convert iteration row data to DataProviderDocument object which contains three variables
+        * id - DocumentID
+        * typeName - ElasticSearch index type name
+        * data - Array for document source data
+    * getTotal($typeName = null) - Optional method. Must return count for all the data or one type only if specified used. Used for iteration closures.
+    * getIterationClosure() - Optional method. Must return callback for iteration: function ($i, $total)
+    * getDocumentData() - Not implemented yet
 
-You will find ShopConfiguration and ShopDataProvider example classes in [example directory](https://github.com/darklow/ff-elastica-manager/tree/master/example).
+Example of both classes can be found in [example directory](https://github.com/darklow/ff-elastica-manager/tree/master/example)
 
-Once you create these classes you can add them to elastica manager
-
-```php
-<?php
-// Create your index configuration with data provider
-$provider = new ShopDataProvider();
-$configuration = new ShopConfiguration($provider);
-
-// Add configuration(s) to the manager
-$elasticaManager->addConfiguration($configuration);
-```
-
-### 3) Get IndexManager
-
-Now you have successfully setup ElasticaManager you can get IndexManager using following code:
+When you have setup up everything, working with indexes is really easy:
 
 ```php
 <?php
-$indexManager = $elasticaManager->getIndexManager('shop');
+$shopIndexManager = $elasticaManager->getIndexManager('shop');
+$shopIndex = $shopIndexManager->create();
+$shopIndexManager->populate();
+$shopIndexManager->delete();
 
-// or you could use configuration constant
-$indexManager = $elasticaManager->getIndexManager(ShopConfiguration::NAME);
 ```
 
-**Note:** If you want to use different name for your index, rather than configuration name, specify it as second parameter for getIndexManager()
+Every time you create index, your configuration and mappings are used and once populated your data is in the index.
 
-```php
-<?php
-$indexManager = $elasticaManager->getIndexManager(ShopConfiguration::NAME, 'custom_index_name');
-```
+Read more on how to setup initial classes in documentation.
 
-Now you have $indexManager and you can start using it's methods
+## Documentation
 
-## Methods
+Read full documentation on how to initiate and use ElasticaManager and IndexManager here:
 
-### Create index
-
-Following line will create new index or throw an exception if index will already exist
-
-```php
-<?php
-$index = $indexManager->create();
-```
-    
-You can set $dropIfExists argument for create() to TRUE if you wish to avoid exception and drop existing index
-
-```php
-<?php
-$index = $indexManager->create(true);
-```
-
-### Delete index
-
-```php
-<?php
-$index = $indexManager->delete();
-```
-
-**Note:** Method will throw `ElasticaManagerIndexNotFoundException` if index will not be found. Use next method indexExists() to verify before calling delete()
-
-
-### Index Exists
-
-```php
-<?php
-$index = $indexManager->indexExists();
-```
-
+[Documentation wiki](https://github.com/darklow/ff-elastica-manager/wiki)
 
 
 ## License
 
 'FF-Elastica-Manager' is licensed under the MIT license.
+
