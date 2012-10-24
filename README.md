@@ -48,7 +48,7 @@ For every index you want to manage, you have to create two classes:
 2. **DataProvider** - Data provider class which provides all the data needed to populate whole index or just one document.
 Following methods must be implemented:
     * getData($typeName = null) - Method must return iterable result/array for all the data or one type only if specified
-    * iterationRowTransform($data, $typeName = null) - Method must return convert iteration row data to DataProviderDocument object which contains three variables
+    * iterationRowTransform($data, $typeName = null) - Method must convert iteration row data to DataProviderDocument object which contains three variables
         * id - DocumentID
         * typeName - ElasticSearch index type name
         * data - Array for document source data
