@@ -8,6 +8,9 @@ abstract class Configuration implements ConfigurationInterface
 	 */
 	protected $provider;
 
+	/**
+	 * @param DataProvider $provider
+	 */
 	public function __construct(DataProvider $provider)
 	{
 		$this->provider = $provider;
@@ -19,5 +22,14 @@ abstract class Configuration implements ConfigurationInterface
 	public function getProvider()
 	{
 		return $this->provider;
+	}
+
+	/**
+	 * Class to string conversion
+	 * @return string
+	 */
+	public function __toString()
+	{
+		return (string)$this->getName();
 	}
 }
