@@ -42,7 +42,7 @@ class ElasticaManager
 	 */
 	public function getConfiguration($configurationName)
 	{
-		if(!isset($this->configurations[$configurationName])) {
+		if (!isset($this->configurations[$configurationName])) {
 			throw new \InvalidArgumentException("Configuration by name \"$configurationName\" doesn't exist");
 		}
 		return $this->configurations[$configurationName];
@@ -62,5 +62,15 @@ class ElasticaManager
 		}
 
 		return $this->indexManagers[$indexName] = new IndexManager($this->client, $configuration, $indexName);
+	}
+
+	/**
+	 * Returns all registered configurations
+	 * Useful note: Configuration class has __toString method returning default index name
+	 * @return Configuration[]
+	 */
+	public function getConfigurations()
+	{
+		return $this->configurations;
 	}
 }

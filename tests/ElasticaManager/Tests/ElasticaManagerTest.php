@@ -18,7 +18,7 @@ class ElasticaManagerTest extends ElasticaManagerTestBase
 	public function testConfiguration()
 	{
 		$elasticaManager = new ElasticaManager($this->client);
-		$configuration = new TestConfiguration(new TestDataProvider());
+		$configuration   = new TestConfiguration(new TestDataProvider());
 		$elasticaManager->addConfiguration($configuration);
 		$configName = TestConfiguration::NAME;
 
@@ -41,5 +41,12 @@ class ElasticaManagerTest extends ElasticaManagerTestBase
 	{
 		$this->setExpectedException('InvalidArgumentException');
 		$this->elasticaManager->getIndexManager('eim_wrong_name_test');
+	}
+
+	public function testGetConfigurations()
+	{
+		$configuration  = new TestConfiguration(new TestDataProvider());
+		$configurations = $this->elasticaManager->getConfigurations();
+		$this->assertEquals($configuration, reset($configurations));
 	}
 }
