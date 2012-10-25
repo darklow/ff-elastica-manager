@@ -31,10 +31,11 @@ and run ```curl -s http://getcomposer.org/installer | php``` to get composer or 
 
 ## Overview
 
-ElasticaManager package contains two classes:
+ElasticaManager package contains of following classes:
 
 1. **ElasticaManager** - working with indexes and elasticsearch server
 2. **IndexManager** - create, delete, manage specific index
+3. **Iterator** - iterates through index data (using ES scan/scroll functionality) and performs user specified closure
 
 For every index you want to manage, you have to create two classes:
 
