@@ -62,16 +62,44 @@ Example of both classes can be found in [example directory](https://github.com/d
 
 When you have setup up everything, working with indexes is really easy:
 
+### IndexManager Example
+
 ```php
 <?php
+
+// Get IndexManager
 $shopIndexManager = $elasticaManager->getIndexManager('shop');
-$shopIndex = $shopIndexManager->create();
+
+// Use IndexManager
+$shopIndexManager->create();
 $shopIndexManager->populate();
 $shopIndexManager->delete();
-
 ```
 
 Every time you create index, your configuration and mappings are used and once populated your data is in the index.
+
+### Iterator Example
+
+```php
+<?php
+
+// Get IndexManager
+$shopIndexManager = $elasticaManager->getIndexManager('shop');
+
+// Get iterator instance
+$iterator = $shopIndexManager->getIterator();
+
+// Specify query
+$query = new Elastica_Query(new Elastica_Query_MatchAll());
+
+// Define closure
+$closure = function (DataProviderDocument $doc, $i, $total) {
+	// Do whatever you like with $doc->getData()
+};
+
+// Start iterating
+$iterator->iterate($query, $closure);
+```
 
 Read more on how to setup initial classes in documentation.
 
