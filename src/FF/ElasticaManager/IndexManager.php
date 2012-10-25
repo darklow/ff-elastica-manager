@@ -23,6 +23,9 @@ class IndexManager
 	/** @var Configuration */
 	protected $configuration;
 
+	/** @var Iterator */
+	protected $iterator;
+
 	/** @var Elastica_Status */
 	protected $status;
 
@@ -298,5 +301,14 @@ class IndexManager
 			return $this->types[$typeName];
 		}
 		return $this->types[$typeName] = $index->getType($typeName);
+	}
+
+	public function getIterator()
+	{
+		if ($this->iterator) {
+			return $this->iterator;
+		}
+
+		return $this->iterator = new Iterator($this->client, $this->getIndex());
 	}
 }

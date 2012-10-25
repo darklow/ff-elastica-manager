@@ -147,6 +147,16 @@ class IndexManagerTest extends ElasticaManagerTestBase
 			throw $e;
 		}
 	}
+
+	public function testGetIterator()
+	{
+		$indexName    = TestConfiguration::NAME.'_alias_test';
+		$indexManager = $this->_getIndexManager($indexName);
+		$index        = $indexManager->create(true);
+		$iterator = $indexManager->getIterator();
+		$this->assertEquals($index, $iterator->getIndex());
+		$indexManager->delete();
+	}
 }
 
 class TestEmptyConfiguration extends Configuration
