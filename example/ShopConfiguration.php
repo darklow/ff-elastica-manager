@@ -6,11 +6,17 @@ use FF\ElasticaManager\Configuration;
 
 class ShopConfiguration extends Configuration
 {
-	const NAME = 'shop';
+	const NAME  = 'shop';
+	const ALIAS = 'shop_active';
 
 	public function getName()
 	{
 		return self::NAME;
+	}
+
+	public function getAlias()
+	{
+		return self::ALIAS;
 	}
 
 	public function getTypes()
@@ -25,7 +31,7 @@ class ShopConfiguration extends Configuration
 			'number_of_replicas' => 1,
 			'analysis'           => array(
 				'analyzer' => array(
-					'shop'         => array(
+					'shop' => array(
 						'type'      => 'custom',
 						'tokenizer' => 'standard',
 						'filter'    => array('lowercase', 'standard', 'asciifolding', 'shop_ngrams')
@@ -55,7 +61,7 @@ class ShopConfiguration extends Configuration
 	public function getMappingProperties(Elastica_Type $type)
 	{
 		$array = array(
-			'name'     => array(
+			'name'  => array(
 				'type'   => 'multi_field',
 				'fields' => array(
 					'partial_name' => array(
@@ -64,11 +70,11 @@ class ShopConfiguration extends Configuration
 						'type'            => 'string',
 					),
 					'full_name'    => array(
-						'type'     => 'string',
+						'type' => 'string',
 					)
 				)
 			),
-			'image'    => array(
+			'image' => array(
 				'type'  => 'string',
 				'index' => 'no'
 			)
