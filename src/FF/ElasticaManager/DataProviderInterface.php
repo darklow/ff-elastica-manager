@@ -27,7 +27,7 @@ interface DataProviderInterface
 	 * Define closure for data provider if needed. Useful for some memory clear for entity managers etc.
 	 * Closure receives two arguments iterator index and total count: function ($i, $total)
 	 *
-	 * @return \Closure
+	 * @return \Closure|null
 	 */
 	public function getIterationClosure();
 
