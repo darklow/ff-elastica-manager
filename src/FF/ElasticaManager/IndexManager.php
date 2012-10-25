@@ -1,13 +1,14 @@
 <?php
 namespace FF\ElasticaManager;
 
-use Elastica_Client;
+use FF\ElasticaManager\Exception\ElasticaManagerNoAliasException;
 use FF\ElasticaManager\Exception\ElasticaManagerProviderTransformException;
 use FF\ElasticaManager\Exception\ElasticaManagerProviderIteratorException;
 use FF\ElasticaManager\Exception\ElasticaManagerNoProviderDataException;
-use Elastica_Document;
 use FF\ElasticaManager\Exception\ElasticaManagerIndexExistsException;
 use FF\ElasticaManager\Exception\ElasticaManagerIndexNotFoundException;
+use Elastica_Client;
+use Elastica_Document;
 use Elastica_Response;
 use Elastica_Index;
 use Elastica_Status;
@@ -87,7 +88,7 @@ class IndexManager
 		}
 
 		$elasticaIndex = $this->client->getIndex($this->indexName);
-		$elasticaIndex->create($this->configuration->getConfig(), $dropIfExists);
+		$elasticaIndex->create($this->configuration->getConfig() ? : array(), $dropIfExists);
 		$this->setMapping($elasticaIndex);
 		$this->refreshStatus();
 
@@ -153,7 +154,9 @@ class IndexManager
 				}
 			}
 
-			$mapping->send();
+			if ($mappingParams || $properties) {
+				$mapping->send();
+			}
 		}
 	}
 
@@ -235,6 +238,10 @@ class IndexManager
 	{
 	}
 
+	/**
+	 * @param $aliasName
+	 * @param bool $replace OPTIONAL If set, an existing alias will be replaced
+	 */
 	public function addAlias($aliasName, $replace = false)
 	{
 		$this->getIndex()->addAlias($aliasName, $replace);
@@ -254,6 +261,30 @@ class IndexManager
 		foreach ($indexesWithAlias as $indexWithAlias) {
 			$indexWithAlias->removeAlias($aliasName);
 		}
+	}
+
+	/**
+	 * @param bool $replace OPTIONAL If set, an existing alias will be replaced
+	 */
+	public function addDefaultAlias($replace = false)
+	{
+		$defaultAlias = $this->getDefaultAlias();
+		$this->addAlias($defaultAlias, $replace);
+	}
+
+	public function removeDefaultAlias()
+	{
+		$defaultAlias = $this->getDefaultAlias();
+		$this->removeAlias($defaultAlias);
+	}
+
+	protected function getDefaultAlias()
+	{
+		$defaultAlias = $this->configuration->getAlias();
+		if (!$defaultAlias) {
+			throw new ElasticaManagerNoAliasException($this->configuration->getName());
+		}
+		return $defaultAlias;
 	}
 
 	/**

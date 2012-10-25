@@ -11,6 +11,8 @@ interface ConfigurationInterface
 
 	public function getTypes();
 
+	public function getAlias();
+
 	public function getConfig();
 
 	public function getMappingParams(Elastica_Type $type);

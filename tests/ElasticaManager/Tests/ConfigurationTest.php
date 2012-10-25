@@ -18,4 +18,10 @@ class ConfigurationTest extends ElasticaManagerTestBase
 		$configuration = new TestConfiguration(new TestDataProvider());
 		$this->assertEquals($configuration::NAME, (string)$configuration);
 	}
+
+	public function testAlias()
+	{
+		$configuration = new TestConfiguration(new TestDataProvider());
+		$this->assertEquals($configuration::ALIAS, $configuration->getAlias());
+	}
 }

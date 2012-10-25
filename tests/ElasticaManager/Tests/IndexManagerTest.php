@@ -2,6 +2,8 @@
 namespace ElasticaManager\Tests;
 
 use Elastica_Client;
+use FF\ElasticaManager\Exception\ElasticaManagerNoAliasException;
+use FF\ElasticaManager\Configuration;
 use Elastica_Type;
 use Elastica_Index;
 use ElasticaManager\Tests\Configuration\TestDataProvider;
@@ -97,7 +99,7 @@ class IndexManagerTest extends ElasticaManagerTestBase
 
 	public function testPopulateAll()
 	{
-		$indexName = TestConfiguration::NAME.'_populate_test';
+		$indexName    = TestConfiguration::NAME.'_populate_test';
 		$indexManager = $this->_getIndexManager($indexName);
 
 		$test    = $this;
@@ -107,5 +109,73 @@ class IndexManagerTest extends ElasticaManagerTestBase
 		$index   = $indexManager->populate(null, $closure, true);
 		$count   = $this->_getTotalDocs($index);
 		$this->assertEquals(4, $count);
+
+		$indexManager->delete();
+	}
+
+	public function testDefaultAlias()
+	{
+		$indexName    = TestConfiguration::NAME.'_alias_test';
+		$indexManager = $this->_getIndexManager($indexName);
+		$index        = $indexManager->create(true);
+
+		$defaultAliasName = $indexManager->getConfiguration()->getAlias();
+		$indexManager->addDefaultAlias();
+		$aliases = $index->getStatus()->getAliases();
+		$this->assertTrue(in_array($defaultAliasName, $aliases));
+
+		$indexManager->removeDefaultAlias();
+		$aliases = $index->getStatus()->getAliases();
+		$this->assertFalse(in_array($defaultAliasName, $aliases));
+
+		$indexManager->delete();
+	}
+
+	public function testAddDefaultAliasException()
+	{
+		$this->setExpectedException('FF\ElasticaManager\Exception\ElasticaManagerNoAliasException');
+
+		$configuration = new TestEmptyConfiguration(new TestDataProvider());
+		$this->elasticaManager->addConfiguration($configuration);
+		$indexManager = $this->elasticaManager->getIndexManager($configuration::NAME);
+		$indexManager->create(true);
+		try {
+			$indexManager->addDefaultAlias();
+		}
+		catch (ElasticaManagerNoAliasException $e) {
+			$indexManager->delete();
+			throw $e;
+		}
+	}
+}
+
+class TestEmptyConfiguration extends Configuration
+{
+	const NAME = 'eim_test_empty';
+
+	public function getName()
+	{
+		return self::NAME;
+	}
+
+	public function getAlias()
+	{
+	}
+
+	public function getTypes()
+	{
+		return array('empty');
+	}
+
+	public function getConfig()
+	{
+	}
+
+	public function getMappingParams(Elastica_Type $type)
+	{
+	}
+
+	public function getMappingProperties(Elastica_Type $type)
+	{
 	}
 }
