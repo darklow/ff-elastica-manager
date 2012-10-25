@@ -5,16 +5,17 @@ FF-Elastica-Manager is php library for creating, rotating, populating and managi
 
 ### Work in progress
 
-This package is still under development, however these methods are already implemented:
+This package is still under development, however these features are already implemented
 
-* create index
-* populate index
-* delete index
-* index exists
-* addAlias, removeAlias
-* examples: ShopConfiguration.php, ShopDataProvider.php [Go to example directory](https://github.com/darklow/ff-elastica-manager/tree/master/example)
+## Features
 
-**Todo**: Index copy, index rotate (copy and change alias), Symfony2 Command example
+* Index creation with user config and mapping
+* Index data population using data provider
+* Index utils: delete, indexExists, addAlias, removeAlias
+* Iterator. Iterates through index data (using ES scan/scroll functionality) and performs user specified closure
+* Examples: ShopConfiguration.php, ShopDataProvider.php [Go to example directory](https://github.com/darklow/ff-elastica-manager/tree/master/example)
+
+**Todo**: Index copy/clone, index rotate (copy and change alias), Symfony2 Console component commands
 
 ## Installation
 The recommended way to install package is [through composer](http://getcomposer.org). Create a `composer.json` in your project root-directory:
