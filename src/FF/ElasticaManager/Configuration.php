@@ -32,4 +32,12 @@ abstract class Configuration implements ConfigurationInterface
 	{
 		return (string)$this->getName();
 	}
+
+	/**
+	 * Get default alias name
+	 * @return string|null
+	 */
+	public function getAlias()
+	{
+	}
 }
