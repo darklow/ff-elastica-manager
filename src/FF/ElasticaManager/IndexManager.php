@@ -182,6 +182,16 @@ class IndexManager
 		return $elasticaIndex;
 	}
 
+	public function getIndexByAlias()
+	{
+		$defaultAlias = $this->getDefaultAlias();
+		if (!$this->hasAlias($defaultAlias)) {
+			throw new ElasticaManagerIndexNotFoundException($defaultAlias, true);
+		}
+		$elasticaIndex = $this->client->getIndex($defaultAlias);
+		return $elasticaIndex;
+	}
+
 	/**
 	 * @param null $typeName
 	 * @param callable|null $closure

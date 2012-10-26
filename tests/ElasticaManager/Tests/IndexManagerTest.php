@@ -2,13 +2,13 @@
 namespace ElasticaManager\Tests;
 
 use Elastica_Client;
+use FF\ElasticaManager\Exception\ElasticaManagerIndexNotFoundException;
 use FF\ElasticaManager\Exception\ElasticaManagerNoAliasException;
 use FF\ElasticaManager\Configuration;
 use Elastica_Type;
 use Elastica_Index;
 use ElasticaManager\Tests\Configuration\TestDataProvider;
 use ElasticaManager\Tests\Configuration\TestConfiguration;
-use FF\ElasticaManager\ElasticaManager;
 use FF\ElasticaManager\IndexManager;
 
 class IndexManagerTest extends ElasticaManagerTestBase
@@ -148,12 +148,39 @@ class IndexManagerTest extends ElasticaManagerTestBase
 		}
 	}
 
+	public function testGetIndexByAliasException()
+	{
+		$this->setExpectedException('FF\ElasticaManager\Exception\ElasticaManagerIndexNotFoundException');
+		$indexName    = TestConfiguration::NAME.'_get_alias_exc_test';
+		$indexManager = $this->_getIndexManager($indexName);
+		$indexManager->create(true);
+		try {
+			$indexManager->getIndexByAlias();
+		}
+		catch (ElasticaManagerIndexNotFoundException $e) {
+			$indexManager->delete();
+			throw $e;
+		}
+	}
+
+	public function testGetIndexByAlias()
+	{
+		$indexName    = TestConfiguration::NAME.'_get_alias_test';
+		$indexManager = $this->_getIndexManager($indexName);
+		$index        = $indexManager->create(true);
+		$indexManager->addDefaultAlias();
+
+		$indexByAlias = $indexManager->getIndexByAlias();
+		$this->assertInstanceOf(get_class($index), $indexByAlias);
+		$indexManager->delete();
+	}
+
 	public function testGetIterator()
 	{
 		$indexName    = TestConfiguration::NAME.'_alias_test';
 		$indexManager = $this->_getIndexManager($indexName);
 		$index        = $indexManager->create(true);
-		$iterator = $indexManager->getIterator();
+		$iterator     = $indexManager->getIterator();
 		$this->assertEquals($index, $iterator->getIndex());
 		$indexManager->delete();
 	}
