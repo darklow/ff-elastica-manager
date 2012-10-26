@@ -11,9 +11,9 @@ This package is still under development, however these features are already impl
 
 * Index creation with user config and mapping
 * Index data population using data provider
-* Index one document update/insert
+* One document update/insert/delete
 * Index utils: delete, indexExists, addAlias, removeAlias
-* Batch Iterator. Iterates through index data (using ES scan/scroll functionality) and performs user specified closure
+* Iterator. Batch iterator iterates through index data (using ES scan/scroll functionality) and performs user specified closure
 * Examples: ShopConfiguration.php, ShopDataProvider.php [Go to example directory](https://github.com/darklow/ff-elastica-manager/tree/master/example)
 
 **Todo**: Index copy/clone, index rotate (copy and change alias), Symfony2 Console component commands

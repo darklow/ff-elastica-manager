@@ -256,6 +256,8 @@ class IndexManager
 
 	/**
 	 * Update document or insert if does not exist
+	 * Because it calls index and status refresh - use this method to update few documents only.
+	 * Use populate() method to update larger amounts of documents
 	 *
 	 * @param $id
 	 * @param null $typeName
@@ -265,9 +267,48 @@ class IndexManager
 	{
 		$elasticaIndex = $this->getIndex(true);
 		$data          = $this->getProvider()->getDocumentData($id, $typeName);
-		return $this->transformAndAddDocument($elasticaIndex, $data, $typeName);
+		$result        = $this->transformAndAddDocument($elasticaIndex, $data, $typeName);
+
+		$this->refreshStatus();
+
+		// Refresh Index
+		$elasticaIndex->refresh();
+
+		return $result;
 	}
 
+	/**
+	 * Delete document by id only or by id and type
+	 * Note: If your index does not have unique ID for all types do not forget to specify typeName!
+	 *
+	 * @param $id
+	 * @param null $typeName
+	 * @return Elastica_Response
+	 */
+	public function deleteDocument($id, $typeName = null)
+	{
+		$elasticaIndex = $this->getIndex(true);
+		if ($typeName) {
+			$response = $elasticaIndex->getType($typeName)->deleteById($id);
+		} else {
+			$response = $elasticaIndex->request('_query', 'DELETE', array('ids' => array('values' => array($id))));
+		}
+
+		$this->refreshStatus();
+
+		// Refresh Index
+		$elasticaIndex->refresh();
+
+		return $response;
+	}
+
+	/**
+	 * @param $elasticaIndex
+	 * @param $data
+	 * @param $typeName
+	 * @return Elastica_Response
+	 * @throws ElasticaManagerProviderTransformException
+	 */
 	protected function transformAndAddDocument($elasticaIndex, $data, $typeName)
 	{
 		$providerDoc = $this->getProvider()->iterationRowTransform($data, $typeName);
@@ -282,6 +323,9 @@ class IndexManager
 		return $type->addDocument($doc);
 	}
 
+	/**
+	 * Todo Not implemented yet
+	 */
 	public function copy(\Closure $closure = null, $limit = null)
 	{
 	}
@@ -295,11 +339,21 @@ class IndexManager
 		$this->getIndex()->addAlias($aliasName, $replace);
 	}
 
+	/**
+	 * Verifies if current index has alias name
+	 *
+	 * @param $aliasName
+	 * @return bool
+	 */
 	public function hasAlias($aliasName)
 	{
 		return $this->getStatus()->aliasExists($aliasName);
 	}
 
+	/**
+	 * Removes alias from current index
+	 * @param $aliasName
+	 */
 	public function removeAlias($aliasName)
 	{
 		$status = static::getStatus();
@@ -320,12 +374,21 @@ class IndexManager
 		$this->addAlias($defaultAlias, $replace);
 	}
 
+	/**
+	 * Removes default alias
+	 */
 	public function removeDefaultAlias()
 	{
 		$defaultAlias = $this->getDefaultAlias();
 		$this->removeAlias($defaultAlias);
 	}
 
+	/**
+	 * Returns default alias name
+	 *
+	 * @return null|string
+	 * @throws ElasticaManagerNoAliasException
+	 */
 	protected function getDefaultAlias()
 	{
 		$defaultAlias = $this->configuration->getAlias();
@@ -348,6 +411,12 @@ class IndexManager
 		return $this->types[$typeName] = $index->getType($typeName);
 	}
 
+	/**
+	 * Get iterator for performing batch tasks
+	 * Iterator can iterate through index data (using ES scan/scroll functionality) and perform user specified closure
+	 *
+	 * @return Iterator
+	 */
 	public function getIterator()
 	{
 		if ($this->iterator) {

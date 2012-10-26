@@ -185,7 +185,6 @@ class IndexManagerTest extends ElasticaManagerTestBase
 		$indexManager->delete();
 	}
 
-
 	public function testUpdateDocument()
 	{
 		$indexName    = TestConfiguration::NAME.'_upd_doc_test';
@@ -194,6 +193,32 @@ class IndexManagerTest extends ElasticaManagerTestBase
 		$result     = $indexManager->updateDocument(1);
 		$resultData = $result->getData();
 		$this->assertTrue($resultData['ok']);
+		$indexManager->delete();
+	}
+
+	public function testDeleteDocument()
+	{
+		$indexName    = TestConfiguration::NAME.'_del_doc_test';
+		$indexManager = $this->_getIndexManager($indexName);
+
+		$indexManager->updateDocument(1);
+		$indexManager->updateDocument(3);
+		$index = $indexManager->getIndex();
+		$count = $this->_getTotalDocs($index);
+		$this->assertEquals(2, $count);
+
+		// Without type
+		$result = $indexManager->deleteDocument(1);
+		$result->getData();
+		$count = $this->_getTotalDocs($index);
+		$this->assertEquals(1, $count);
+
+		// With type
+		$result = $indexManager->deleteDocument(3, 'dvd');
+		$result->getData();
+		$count = $this->_getTotalDocs($index);
+		$this->assertEquals(0, $count);
+
 		$indexManager->delete();
 	}
 }

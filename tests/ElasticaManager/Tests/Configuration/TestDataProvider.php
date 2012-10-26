@@ -63,6 +63,11 @@ class TestDataProvider extends DataProvider
 	public function getDocumentData($id, $typeName = null)
 	{
 		$data = $this->getData($typeName);
+
+		$data = array_filter($data, function ($value) use ($id) {
+			return $value['id'] == $id;
+		});
+
 		return reset($data);
 	}
 
