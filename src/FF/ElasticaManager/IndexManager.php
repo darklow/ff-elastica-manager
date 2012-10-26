@@ -17,6 +17,9 @@ use Elastica_Type_Mapping;
 
 class IndexManager
 {
+	const EXISTS_BY_NAME  = 1;
+	const EXISTS_BY_ALIAS = 2;
+
 	/** @var Elastica_Client */
 	protected $client;
 
@@ -116,10 +119,14 @@ class IndexManager
 	 */
 	public function indexExists()
 	{
-		$indexExists = $this->getStatus()->indexExists($this->indexName);
+		if ($indexExists = $this->getStatus()->indexExists($this->indexName)) {
+			$indexExists = self::EXISTS_BY_NAME;
+		}
 
 		if (!$indexExists && $aliasName = $this->configuration->getAlias()) {
-			$indexExists = $this->hasAlias($aliasName);
+			if ($indexExists = $this->hasAlias($aliasName)) {
+				$indexExists = self::EXISTS_BY_ALIAS;
+			}
 		}
 
 		return $indexExists;
@@ -181,13 +188,13 @@ class IndexManager
 	 */
 	public function getIndex($createIfMissing = false)
 	{
-		if (!$this->indexExists()) {
+		if (!$indexExists = $this->indexExists()) {
 			if (!$createIfMissing) {
 				throw new ElasticaManagerIndexNotFoundException($this->indexName);
 			}
 			$elasticaIndex = $this->create();
 		} else {
-			$elasticaIndex = $this->client->getIndex($this->indexName);
+			$elasticaIndex = $this->client->getIndex($indexExists === self::EXISTS_BY_NAME ? $this->indexName : $this->getDefaultAlias());
 		}
 
 		return $elasticaIndex;
@@ -265,7 +272,7 @@ class IndexManager
 	 */
 	public function updateDocument($id, $typeName = null)
 	{
-		$elasticaIndex = $this->getIndex(true);
+		$elasticaIndex = $this->getIndex();
 		$data          = $this->getProvider()->getDocumentData($id, $typeName);
 		$result        = $this->transformAndAddDocument($elasticaIndex, $data, $typeName);
 
