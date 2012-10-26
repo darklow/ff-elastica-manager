@@ -19,7 +19,7 @@ interface DataProviderInterface
 	 * Therefore you can add some class level variable for storing $total
 	 *
 	 * @param null $typeName
-	 * @return int
+	 * @return int|null
 	 */
 	public function getTotal($typeName = null);
 
@@ -33,11 +33,13 @@ interface DataProviderInterface
 
 	/**
 	 * Get data for one document
+	 * Must return same type of data as one iteration row in getData()
 	 *
 	 * @param $id
-	 * @return array
+	 * @param string|null $typeName
+	 * @return DataProviderDocument
 	 */
-	public function getDocumentData($id);
+	public function getDocumentData($id, $typeName = null);
 
 	/**
 	 * Converts result iterator row to DataProviderDocument

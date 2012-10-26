@@ -184,6 +184,18 @@ class IndexManagerTest extends ElasticaManagerTestBase
 		$this->assertEquals($index, $iterator->getIndex());
 		$indexManager->delete();
 	}
+
+
+	public function testUpdateDocument()
+	{
+		$indexName    = TestConfiguration::NAME.'_upd_doc_test';
+		$indexManager = $this->_getIndexManager($indexName);
+
+		$result     = $indexManager->updateDocument(1);
+		$resultData = $result->getData();
+		$this->assertTrue($resultData['ok']);
+		$indexManager->delete();
+	}
 }
 
 class TestEmptyConfiguration extends Configuration

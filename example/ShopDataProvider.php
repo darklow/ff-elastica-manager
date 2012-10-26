@@ -60,8 +60,10 @@ class ShopDataProvider extends DataProvider
 	/**
 	 * {@inheritDoc}
 	 */
-	public function getDocumentData($id, &$typeName = null)
+	public function getDocumentData($id, $typeName)
 	{
+		$data = $this->getData($typeName);
+		return reset($data);
 	}
 
 	/**

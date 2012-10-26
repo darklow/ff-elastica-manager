@@ -60,8 +60,10 @@ class TestDataProvider extends DataProvider
 	/**
 	 * {@inheritDoc}
 	 */
-	public function getDocumentData($id)
+	public function getDocumentData($id, $typeName = null)
 	{
+		$data = $this->getData($typeName);
+		return reset($data);
 	}
 
 	/**

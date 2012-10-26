@@ -182,6 +182,10 @@ class IndexManager
 		return $elasticaIndex;
 	}
 
+	/**
+	 * @return Elastica_Index
+	 * @throws ElasticaManagerIndexNotFoundException
+	 */
 	public function getIndexByAlias()
 	{
 		$defaultAlias = $this->getDefaultAlias();
@@ -228,15 +232,7 @@ class IndexManager
 			$closure and $closure($i, $total);
 			$providerClosure and $providerClosure($i, $total);
 
-			$providerDoc = $this->getProvider()->iterationRowTransform($data, $typeName);
-
-			if (!$providerDoc instanceof DataProviderDocument) {
-				throw new ElasticaManagerProviderTransformException($this->getIndexName());
-			}
-
-			$doc  = new Elastica_Document($providerDoc->getId(), $providerDoc->getData());
-			$type = $this->getType($elasticaIndex, $providerDoc->getTypeName());
-			$type->addDocument($doc);
+			$this->transformAndAddDocument($elasticaIndex, $data, $typeName);
 
 			$i++;
 		}
@@ -245,6 +241,34 @@ class IndexManager
 		$elasticaIndex->refresh();
 
 		return $elasticaIndex;
+	}
+
+	/**
+	 * Update document or insert if does not exist
+	 *
+	 * @param $id
+	 * @param null $typeName
+	 * @return Elastica_Response
+	 */
+	public function updateDocument($id, $typeName = null)
+	{
+		$elasticaIndex = $this->getIndex(true);
+		$data          = $this->getProvider()->getDocumentData($id, $typeName);
+		return $this->transformAndAddDocument($elasticaIndex, $data, $typeName);
+	}
+
+	protected function transformAndAddDocument($elasticaIndex, $data, $typeName)
+	{
+		$providerDoc = $this->getProvider()->iterationRowTransform($data, $typeName);
+
+		if (!$providerDoc instanceof DataProviderDocument) {
+			throw new ElasticaManagerProviderTransformException($this->getIndexName());
+		}
+
+		$doc  = new Elastica_Document($providerDoc->getId(), $providerDoc->getData());
+		$type = $this->getType($elasticaIndex, $providerDoc->getTypeName());
+
+		return $type->addDocument($doc);
 	}
 
 	public function copy(\Closure $closure = null, $limit = null)
