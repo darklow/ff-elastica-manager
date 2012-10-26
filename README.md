@@ -11,8 +11,9 @@ This package is still under development, however these features are already impl
 
 * Index creation with user config and mapping
 * Index data population using data provider
+* Index one document update/insert
 * Index utils: delete, indexExists, addAlias, removeAlias
-* Iterator. Iterates through index data (using ES scan/scroll functionality) and performs user specified closure
+* Batch Iterator. Iterates through index data (using ES scan/scroll functionality) and performs user specified closure
 * Examples: ShopConfiguration.php, ShopDataProvider.php [Go to example directory](https://github.com/darklow/ff-elastica-manager/tree/master/example)
 
 **Todo**: Index copy/clone, index rotate (copy and change alias), Symfony2 Console component commands
@@ -35,12 +36,13 @@ ElasticaManager package contains of following classes:
 
 1. **ElasticaManager** - working with indexes and elasticsearch server
 2. **IndexManager** - create, delete, manage specific index
-3. **Iterator** - iterates through index data (using ES scan/scroll functionality) and performs user specified closure
+3. **Batch Iterator** - iterates through index data (using ES scan/scroll functionality) and performs user specified closure
 
 For every index you want to manage, you have to create two classes:
 
 1. **Configuration** - Configuration class which provides necessary info for ElasticSearch index:
     * Index default name - default name of the index (can be overridden on IndexManager initiation)
+    * Index default alias name
     * Index types - ElasticSearch index type name(s)
     * Index configuration - number of shards and replicas, analysis analyzers and filters
     * Mapping properties - fields and its types for each/all ElasticSearch type
@@ -56,7 +58,7 @@ Following methods must be implemented:
         * data - Array for document source data
     * getTotal($typeName = null) - Optional method. Must return count for all the data or one type only if specified used. Used for iteration closures.
     * getIterationClosure() - Optional method. Must return callback for iteration: function ($i, $total)
-    * getDocumentData() - Not implemented yet
+    * getDocumentData() - Method must return same type of data as one iteration row in getData()
 
 Example of both classes can be found in [example directory](https://github.com/darklow/ff-elastica-manager/tree/master/example)
 
@@ -66,23 +68,22 @@ When you have setup up everything, working with indexes is really easy:
 
 ```php
 <?php
-
 // Get IndexManager
 $shopIndexManager = $elasticaManager->getIndexManager('shop');
 
 // Use IndexManager
 $shopIndexManager->create();
 $shopIndexManager->populate();
+$shopIndexManager->updateDocument(1);
 $shopIndexManager->delete();
 ```
 
 Every time you create index, your configuration and mappings are used and once populated your data is in the index.
 
-### Iterator Example
+### Batch iterator Example
 
 ```php
 <?php
-
 // Get IndexManager
 $shopIndexManager = $elasticaManager->getIndexManager('shop');
 
