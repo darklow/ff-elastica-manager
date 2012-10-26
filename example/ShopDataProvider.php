@@ -60,9 +60,14 @@ class ShopDataProvider extends DataProvider
 	/**
 	 * {@inheritDoc}
 	 */
-	public function getDocumentData($id, $typeName)
+	public function getDocumentData($id, $typeName = null)
 	{
 		$data = $this->getData($typeName);
+
+		$data = array_filter($data, function ($value) use ($id) {
+			return $value['id'] == $id;
+		});
+
 		return reset($data);
 	}
 
