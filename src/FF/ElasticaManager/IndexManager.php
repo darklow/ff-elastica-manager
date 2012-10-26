@@ -109,12 +109,20 @@ class IndexManager
 	}
 
 	/**
-	 * @param string|null $indexName
+	 * Verify if index exists
+	 * Checks by index name or by alias name if any specified in configuration
+	 *
 	 * @return bool
 	 */
-	public function indexExists($indexName = null)
+	public function indexExists()
 	{
-		return $this->getStatus()->indexExists($indexName ? : $this->indexName);
+		$indexExists = $this->getStatus()->indexExists($this->indexName);
+
+		if (!$indexExists && $aliasName = $this->configuration->getAlias()) {
+			$indexExists = $this->hasAlias($aliasName);
+		}
+
+		return $indexExists;
 	}
 
 	/**
@@ -164,13 +172,16 @@ class IndexManager
 	}
 
 	/**
+	 * Get index
+	 * By default index is selected by indexName or if not found then by aliasName if such specified in configuration
+	 *
 	 * @param bool $createIfMissing
 	 * @throws ElasticaManagerIndexNotFoundException
 	 * @return Elastica_Index
 	 */
 	public function getIndex($createIfMissing = false)
 	{
-		if (!$this->indexExists($this->indexName)) {
+		if (!$this->indexExists()) {
 			if (!$createIfMissing) {
 				throw new ElasticaManagerIndexNotFoundException($this->indexName);
 			}
