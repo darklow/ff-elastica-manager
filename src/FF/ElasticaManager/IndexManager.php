@@ -230,7 +230,7 @@ class IndexManager
 			$this->delete();
 		}
 
-		$elasticaIndex  = $findIndexByAlias ? $this->getIndexByAlias() : $this->getIndex(true);
+		$elasticaIndex = $findIndexByAlias ? $this->getIndexByAlias() : $this->getIndex(true);
 
 		$provider        = $this->getProvider();
 		$iterableResult  = $provider->getData($typeName);
@@ -427,14 +427,15 @@ class IndexManager
 	 * Get iterator for performing batch tasks
 	 * Iterator can iterate through index data (using ES scan/scroll functionality) and perform user specified closure
 	 *
+	 * @param bool $findIndexByAlias
 	 * @return Iterator
 	 */
-	public function getIterator()
+	public function getIterator($findIndexByAlias = false)
 	{
 		if ($this->iterator) {
 			return $this->iterator;
 		}
 
-		return $this->iterator = new Iterator($this->client, $this->getIndex());
+		return $this->iterator = new Iterator($this->client, $findIndexByAlias ? $this->getIndexByAlias() : $this->getIndex());
 	}
 }
