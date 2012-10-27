@@ -113,9 +113,28 @@ class IndexManagerTest extends ElasticaManagerTestBase
 		$indexManager->delete();
 	}
 
+	public function testPopulateAllByAlias()
+	{
+		$indexName    = TestConfiguration::NAME.'_pop_alias_test';
+		$indexManager = $this->_getIndexManager($indexName);
+		$indexManager->create(true);
+		$resp = $indexManager->addDefaultAlias();
+
+		$indexManager = $this->_getIndexManager();
+		$test    = $this;
+		$closure = function ($i, $total) use ($test) {
+			$test->assertGreaterThanOrEqual(4, $total);
+		};
+		$index   = $indexManager->populate(null, $closure, false, true);
+		$count   = $this->_getTotalDocs($index);
+		$this->assertEquals(4, $count);
+
+		$indexManager->delete(true);
+	}
+
 	public function testDefaultAlias()
 	{
-		$indexName    = TestConfiguration::NAME.'_alias_test';
+		$indexName    = TestConfiguration::NAME.'_def_alias_test';
 		$indexManager = $this->_getIndexManager($indexName);
 		$index        = $indexManager->create(true);
 
@@ -189,6 +208,7 @@ class IndexManagerTest extends ElasticaManagerTestBase
 	{
 		$indexName    = TestConfiguration::NAME.'_upd_doc_test';
 		$indexManager = $this->_getIndexManager($indexName);
+		$indexManager->create(true);
 
 		$result     = $indexManager->updateDocument(1);
 		$resultData = $result->getData();
@@ -200,6 +220,7 @@ class IndexManagerTest extends ElasticaManagerTestBase
 	{
 		$indexName    = TestConfiguration::NAME.'_del_doc_test';
 		$indexManager = $this->_getIndexManager($indexName);
+		$indexManager->create(true);
 
 		$indexManager->updateDocument(1);
 		$indexManager->updateDocument(3);
@@ -220,6 +241,31 @@ class IndexManagerTest extends ElasticaManagerTestBase
 		$this->assertEquals(0, $count);
 
 		$indexManager->delete();
+	}
+
+	public function testManageDocumentByAlias()
+	{
+		$indexName    = TestConfiguration::NAME.'_upd_doc_alias_test';
+		$indexManager = $this->_getIndexManager($indexName);
+		$indexManager->create(true);
+		$indexManager->addDefaultAlias();
+
+		$indexManager = $this->_getIndexManager();
+		$index = $indexManager->getIndexByAlias();
+		$result       = $indexManager->updateDocument(1, null, true);
+		$resultData   = $result->getData();
+		$this->assertTrue($resultData['ok']);
+		$count = $this->_getTotalDocs($index);
+		$this->assertEquals(1, $count);
+
+		// Now delete document by alias
+		$result = $indexManager->deleteDocument(1, null, true);
+		$resultData   = $result->getData();
+		$this->assertTrue($resultData['ok']);
+		$count = $this->_getTotalDocs($index);
+		$this->assertEquals(0, $count);
+
+		$indexManager->delete(true);
 	}
 }
 

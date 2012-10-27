@@ -102,34 +102,35 @@ class IndexManager
 	}
 
 	/**
+	 * @param bool $findIndexByAlias
 	 * @return Elastica_Response
 	 */
-	public function delete()
+	public function delete($findIndexByAlias = false)
 	{
-		$deleteResponse = $this->getIndex(false)->delete();
+		$elasticaIndex  = $findIndexByAlias ? $this->getIndexByAlias() : $this->getIndex();
+		$deleteResponse = $elasticaIndex->delete();
 		$this->refreshStatus();
 		return $deleteResponse;
 	}
 
 	/**
 	 * Verify if index exists
-	 * Checks by index name or by alias name if any specified in configuration
 	 *
 	 * @return bool
 	 */
 	public function indexExists()
 	{
-		if ($indexExists = $this->getStatus()->indexExists($this->indexName)) {
-			$indexExists = self::EXISTS_BY_NAME;
-		}
+		return $this->getStatus()->indexExists($this->indexName);
+	}
 
-		if (!$indexExists && $aliasName = $this->configuration->getAlias()) {
-			if ($indexExists = $this->hasAlias($aliasName)) {
-				$indexExists = self::EXISTS_BY_ALIAS;
-			}
-		}
-
-		return $indexExists;
+	/**
+	 * Verify if index exists by default alias name
+	 *
+	 * @return bool
+	 */
+	public function indexExistsByAlias()
+	{
+		return $this->hasAlias($this->getDefaultAlias());
 	}
 
 	/**
@@ -194,7 +195,7 @@ class IndexManager
 			}
 			$elasticaIndex = $this->create();
 		} else {
-			$elasticaIndex = $this->client->getIndex($indexExists === self::EXISTS_BY_NAME ? $this->indexName : $this->getDefaultAlias());
+			$elasticaIndex = $this->client->getIndex($this->indexName);
 		}
 
 		return $elasticaIndex;
@@ -218,18 +219,18 @@ class IndexManager
 	 * @param null $typeName
 	 * @param callable|null $closure
 	 * @param bool $deleteIfExists
+	 * @param bool $findIndexByAlias
 	 * @throws ElasticaManagerProviderIteratorException
 	 * @throws ElasticaManagerNoProviderDataException
-	 * @throws ElasticaManagerProviderTransformException
 	 * @return Elastica_Index
 	 */
-	public function populate($typeName = null, \Closure $closure = null, $deleteIfExists = true)
+	public function populate($typeName = null, \Closure $closure = null, $deleteIfExists = true, $findIndexByAlias = false)
 	{
 		if ($deleteIfExists && $this->indexExists()) {
 			$this->delete();
 		}
 
-		$elasticaIndex = $this->getIndex(true);
+		$elasticaIndex  = $findIndexByAlias ? $this->getIndexByAlias() : $this->getIndex(true);
 
 		$provider        = $this->getProvider();
 		$iterableResult  = $provider->getData($typeName);
@@ -268,11 +269,12 @@ class IndexManager
 	 *
 	 * @param $id
 	 * @param null $typeName
+	 * @param bool $findIndexByAlias
 	 * @return Elastica_Response
 	 */
-	public function updateDocument($id, $typeName = null)
+	public function updateDocument($id, $typeName = null, $findIndexByAlias = false)
 	{
-		$elasticaIndex = $this->getIndex();
+		$elasticaIndex = $findIndexByAlias ? $this->getIndexByAlias() : $this->getIndex();
 		$data          = $this->getProvider()->getDocumentData($id, $typeName);
 		$result        = $this->transformAndAddDocument($elasticaIndex, $data, $typeName);
 
@@ -290,11 +292,12 @@ class IndexManager
 	 *
 	 * @param $id
 	 * @param null $typeName
+	 * @param bool $findIndexByAlias
 	 * @return Elastica_Response
 	 */
-	public function deleteDocument($id, $typeName = null)
+	public function deleteDocument($id, $typeName = null, $findIndexByAlias = false)
 	{
-		$elasticaIndex = $this->getIndex(true);
+		$elasticaIndex = $findIndexByAlias ? $this->getIndexByAlias() : $this->getIndex();
 		if ($typeName) {
 			$response = $elasticaIndex->getType($typeName)->deleteById($id);
 		} else {
@@ -340,10 +343,11 @@ class IndexManager
 	/**
 	 * @param $aliasName
 	 * @param bool $replace OPTIONAL If set, an existing alias will be replaced
+	 * @return Elastica_Response
 	 */
 	public function addAlias($aliasName, $replace = false)
 	{
-		$this->getIndex()->addAlias($aliasName, $replace);
+		return $this->getIndex()->addAlias($aliasName, $replace);
 	}
 
 	/**
@@ -374,11 +378,12 @@ class IndexManager
 
 	/**
 	 * @param bool $replace OPTIONAL If set, an existing alias will be replaced
+	 * @return Elastica_Response
 	 */
 	public function addDefaultAlias($replace = false)
 	{
 		$defaultAlias = $this->getDefaultAlias();
-		$this->addAlias($defaultAlias, $replace);
+		return $this->addAlias($defaultAlias, $replace);
 	}
 
 	/**
