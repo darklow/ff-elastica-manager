@@ -23,7 +23,7 @@ The recommended way to install package is [through composer](http://getcomposer.
 
     {
         "require": {
-            "darklow/ff-silex-less-provider": "*"
+            "darklow/ff-elastica-manager": "*"
         }
     }
 
