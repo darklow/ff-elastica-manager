@@ -1,31 +1,31 @@
 {
-    "hash": "81f4628ebff6b2dcbaf8b58db8c5f21f",
+    "hash": "86069251054ecafac0e16926b396712b",
     "packages": [
         {
             "name": "ruflin/Elastica",
-            "version": "dev-master",
+            "version": "dev-connection-refactoring",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ruflin/Elastica",
-                "reference": "7738d2f6033268940c80e231fee1bd85922fb9bf"
+                "reference": "9aec5ab6ce5fb816f12e22ab95e475037ec8c432"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/ruflin/Elastica/zipball/7738d2f6033268940c80e231fee1bd85922fb9bf",
-                "reference": "7738d2f6033268940c80e231fee1bd85922fb9bf",
+                "url": "https://github.com/ruflin/Elastica/archive/9aec5ab6ce5fb816f12e22ab95e475037ec8c432.zip",
+                "reference": "9aec5ab6ce5fb816f12e22ab95e475037ec8c432",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.0"
             },
-            "time": "1349974201",
+            "time": "2013-01-13 14:43:13",
             "type": "library",
-            "installation-source": "source",
             "autoload": {
                 "psr-0": {
                     "Elastica": "lib/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "Apache 2.0"
             ],
