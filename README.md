@@ -91,7 +91,7 @@ $shopIndexManager = $elasticaManager->getIndexManager('shop');
 $iterator = $shopIndexManager->getIterator();
 
 // Specify query
-$query = new Elastica_Query(new Elastica_Query_MatchAll());
+$query = new Elastica\Query(new Elastica\Query\MatchAll());
 
 // Define closure
 $closure = function (DataProviderDocument $doc, $i, $total) {

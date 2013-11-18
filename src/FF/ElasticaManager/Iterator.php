@@ -1,28 +1,28 @@
 <?php
 namespace FF\ElasticaManager;
 
-use Elastica_Client;
-use Elastica_Document;
-use Elastica_Query;
-use Elastica_Query_Abstract;
-use Elastica_Index;
+use Elastica\Client;
+use Elastica\Document;
+use Elastica\Query;
+use Elastica\Query\AbstractQuery;
+use Elastica\Index;
 
 class Iterator
 {
-	/** @var Elastica_Client */
+	/** @var Client */
 	protected $client;
 
-	/** @var Elastica_Index */
+	/** @var Index */
 	protected $index;
 
-	function __construct(Elastica_Client $client, Elastica_Index $index)
+	function __construct(Client $client, Index $index)
 	{
 		$this->client = $client;
 		$this->index  = $index;
 	}
 
 	/**
-	 * @return Elastica_Client
+	 * @return Client
 	 */
 	public function getClient()
 	{
@@ -30,7 +30,7 @@ class Iterator
 	}
 
 	/**
-	 * @return Elastica_Index
+	 * @return Index
 	 */
 	public function getIndex()
 	{
@@ -45,12 +45,12 @@ class Iterator
 	 * See docs about $scroll in link:
 	 * @link http://www.elasticsearch.org/guide/reference/api/search/scroll.html
 	 *
-	 * @param Elastica_Query|Elastica_Query_Abstract $query
+	 * @param Query|AbstractQuery $query
 	 * @param \Closure $closure Receives arguments: function(DataProviderDocument $doc, $i, $total); Return TRUE in $closure if you want to break and stop iteration
 	 * @param int $batchSize
 	 * @param string $scroll
 	 */
-	public function iterate(Elastica_Query $query, \Closure $closure, $batchSize = 100, $scroll = '5m')
+	public function iterate(Query $query, \Closure $closure, $batchSize = 100, $scroll = '5m')
 	{
 		$response = $this->index->request('_search', 'GET', $query->toArray(), array(
 			'search_type' => 'scan',

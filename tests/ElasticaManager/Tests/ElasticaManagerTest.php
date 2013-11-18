@@ -1,7 +1,6 @@
 <?php
 namespace ElasticaManager\Tests;
 
-use Elastica_Client;
 use FF\ElasticaManager\IndexManager;
 use ElasticaManager\Tests\Configuration\TestDataProvider;
 use ElasticaManager\Tests\Configuration\TestConfiguration;
