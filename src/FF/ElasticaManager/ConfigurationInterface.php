@@ -1,7 +1,7 @@
 <?php
 namespace FF\ElasticaManager;
 
-use Elastica_Type;
+use Elastica\Type;
 
 interface ConfigurationInterface
 {
@@ -15,7 +15,7 @@ interface ConfigurationInterface
 
 	public function getConfig();
 
-	public function getMappingParams(Elastica_Type $type);
+	public function getMappingParams(Type $type);
 
-	public function getMappingProperties(Elastica_Type $type);
+	public function getMappingProperties(Type $type);
 }

@@ -1,12 +1,12 @@
 <?php
 namespace ElasticaManager\Tests;
 
-use Elastica_Client;
+use Elastica\Client;
 use FF\ElasticaManager\Exception\ElasticaManagerIndexNotFoundException;
 use FF\ElasticaManager\Exception\ElasticaManagerNoAliasException;
 use FF\ElasticaManager\Configuration;
-use Elastica_Type;
-use Elastica_Index;
+use Elastica\Type;
+use Elastica\Index;
 use ElasticaManager\Tests\Configuration\TestDataProvider;
 use ElasticaManager\Tests\Configuration\TestConfiguration;
 use FF\ElasticaManager\IndexManager;
@@ -33,7 +33,7 @@ class IndexManagerTest extends ElasticaManagerTestBase
 	{
 		$indexName = TestConfiguration::NAME;
 		$index     = $this->indexManager->create(true);
-		$newIndex  = new Elastica_Index($this->client, $indexName);
+		$newIndex  = new Index($this->client, $indexName);
 		$this->assertEquals($newIndex, $index);
 
 		$this->indexManager->delete();
@@ -88,7 +88,7 @@ class IndexManagerTest extends ElasticaManagerTestBase
 		$types         = $configuration->getTypes();
 		foreach ($types as $typeName) {
 			$properties     = $mapping[$indexName][$typeName]['properties'];
-			$confProperties = $configuration->getMappingProperties(new Elastica_Type($index, $typeName));
+			$confProperties = $configuration->getMappingProperties(new Type($index, $typeName));
 			ksort($properties);
 			ksort($confProperties);
 			$this->assertEquals(array_keys($properties), array_keys($confProperties));
@@ -291,11 +291,11 @@ class TestEmptyConfiguration extends Configuration
 	{
 	}
 
-	public function getMappingParams(Elastica_Type $type)
+	public function getMappingParams(Type $type)
 	{
 	}
 
-	public function getMappingProperties(Elastica_Type $type)
+	public function getMappingProperties(Type $type)
 	{
 	}
 }

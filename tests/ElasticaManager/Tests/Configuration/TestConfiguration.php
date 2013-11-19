@@ -1,7 +1,7 @@
 <?php
 namespace ElasticaManager\Tests\Configuration;
 
-use Elastica_Type;
+use Elastica\Type;
 use FF\ElasticaManager\Configuration;
 
 class TestConfiguration extends Configuration
@@ -49,7 +49,7 @@ class TestConfiguration extends Configuration
 		);
 	}
 
-	public function getMappingParams(Elastica_Type $type)
+	public function getMappingParams(Type $type)
 	{
 		return array(
 			'_all' => array(
@@ -58,7 +58,7 @@ class TestConfiguration extends Configuration
 		);
 	}
 
-	public function getMappingProperties(Elastica_Type $type)
+	public function getMappingProperties(Type $type)
 	{
 		$array = array(
 			'name'  => array(

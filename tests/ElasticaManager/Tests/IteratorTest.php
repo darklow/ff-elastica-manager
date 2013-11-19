@@ -1,9 +1,9 @@
 <?php
 namespace ElasticaManager\Tests;
 
-use Elastica_Query_MatchAll;
-use Elastica_Filter_Type;
-use Elastica_Query;
+use Elastica\Query\MatchAll;
+use Elastica\Filter\Type;
+use Elastica\Query;
 use FF\ElasticaManager\DataProviderDocument;
 use FF\ElasticaManager\Iterator;
 use ElasticaManager\Tests\Configuration\TestConfiguration;
@@ -36,11 +36,11 @@ class IteratorTest extends ElasticaManagerTestBase
 			}
 		};
 
-		$query = new Elastica_Query(new Elastica_Query_MatchAll());
+		$query = new Query(new MatchAll());
 		$iterator->iterate($query, $closure);
 
 		// Test type query and break in $closure
-		$query->setFilter(new Elastica_Filter_Type('dvd'));
+		$query->setFilter(new Type('dvd'));
 		$j       = 0;
 		$closure = function (DataProviderDocument $doc, $i, $total) use ($test, &$j) {
 			$test->assertEquals(2, $total);

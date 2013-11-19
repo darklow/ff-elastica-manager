@@ -1,8 +1,8 @@
 <?php
 namespace ElasticaManager\Tests;
 
-use Elastica_Client;
-use Elastica_Index;
+use Elastica\Client;
+use Elastica\Index;
 use FF\ElasticaManager\IndexManager;
 use FF\ElasticaManager\ElasticaManager;
 use ElasticaManager\Tests\Configuration\TestDataProvider;
@@ -10,7 +10,7 @@ use ElasticaManager\Tests\Configuration\TestConfiguration;
 
 abstract class ElasticaManagerTestBase extends \PHPUnit_Framework_TestCase
 {
-	/** @var Elastica_Client */
+	/** @var Client */
 	protected $client;
 
 	/** @var ElasticaManager */
@@ -21,7 +21,7 @@ abstract class ElasticaManagerTestBase extends \PHPUnit_Framework_TestCase
 
 	protected function setUp()
 	{
-		$this->client  = new Elastica_Client($this->getClientConfig());
+		$this->client  = new Client($this->getClientConfig());
 		$configuration = new TestConfiguration(new TestDataProvider());
 
 		$this->elasticaManager = new ElasticaManager($this->client);
@@ -39,7 +39,7 @@ abstract class ElasticaManagerTestBase extends \PHPUnit_Framework_TestCase
 		return array(
 			'servers' => array(
 				array(
-					'host' => '192.168.0.223',
+					'host' => 'localhost',
 					'port' => 9200
 				)
 			)
@@ -57,7 +57,7 @@ abstract class ElasticaManagerTestBase extends \PHPUnit_Framework_TestCase
 		return new IndexManager($this->client, $configuration, $indexName);
 	}
 
-	protected function _getTotalDocs(Elastica_Index $index)
+	protected function _getTotalDocs(Index $index)
 	{
 		$stats = $index->getStats()->getData();
 		$count = $stats['_all']['primaries']['docs']['count'];

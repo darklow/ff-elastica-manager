@@ -1,11 +1,11 @@
 <?php
 namespace FF\ElasticaManager;
 
-use Elastica_Client;
+use Elastica\Client;
 
 class ElasticaManager
 {
-	/** @var Elastica_Client */
+	/** @var Client */
 	protected $client;
 
 	/** @var Configuration[] */
@@ -17,13 +17,13 @@ class ElasticaManager
 	/** @var IndexManager[] */
 	protected $indexManagers;
 
-	public function __construct(Elastica_Client $client)
+	public function __construct(Client $client)
 	{
 		$this->client = $client;
 	}
 
 	/**
-	 * @return Elastica_Client
+	 * @return Client
 	 */
 	public function getClient()
 	{

@@ -7,20 +7,20 @@ use FF\ElasticaManager\Exception\ElasticaManagerProviderIteratorException;
 use FF\ElasticaManager\Exception\ElasticaManagerNoProviderDataException;
 use FF\ElasticaManager\Exception\ElasticaManagerIndexExistsException;
 use FF\ElasticaManager\Exception\ElasticaManagerIndexNotFoundException;
-use Elastica_Client;
-use Elastica_Document;
-use Elastica_Response;
-use Elastica_Index;
-use Elastica_Status;
-use Elastica_Type;
-use Elastica_Type_Mapping;
+use Elastica\Client;
+use Elastica\Document;
+use Elastica\Response;
+use Elastica\Index;
+use Elastica\Status;
+use Elastica\Type;
+use Elastica\Type\Mapping;
 
 class IndexManager
 {
 	const EXISTS_BY_NAME  = 1;
 	const EXISTS_BY_ALIAS = 2;
 
-	/** @var Elastica_Client */
+	/** @var Client */
 	protected $client;
 
 	/** @var Configuration */
@@ -29,20 +29,20 @@ class IndexManager
 	/** @var Iterator */
 	protected $iterator;
 
-	/** @var Elastica_Status */
+	/** @var Status */
 	protected $status;
 
-	/** @var Elastica_Type[] */
+	/** @var Type[] */
 	protected $types;
 
 	protected $indexName;
 
 	/**
-	 * @param Elastica_Client $client
+	 * @param Client $client
 	 * @param Configuration $configuration
 	 * @param $indexName
 	 */
-	function __construct(Elastica_Client $client, Configuration $configuration, $indexName)
+	function __construct(Client $client, Configuration $configuration, $indexName)
 	{
 		$this->client        = $client;
 		$this->configuration = $configuration;
@@ -50,7 +50,7 @@ class IndexManager
 	}
 
 	/**
-	 * @return Elastica_Client
+	 * @return Client
 	 */
 	public function getClient()
 	{
@@ -85,7 +85,7 @@ class IndexManager
 	 * @param bool $dropIfExists
 	 * @internal param $configurationName
 	 * @throws ElasticaManagerIndexExistsException
-	 * @return Elastica_Index
+	 * @return Index
 	 */
 	public function create($dropIfExists = false)
 	{
@@ -103,7 +103,7 @@ class IndexManager
 
 	/**
 	 * @param bool $findIndexByAlias
-	 * @return Elastica_Response
+	 * @return Response
 	 */
 	public function delete($findIndexByAlias = false)
 	{
@@ -134,11 +134,11 @@ class IndexManager
 	}
 
 	/**
-	 * @return Elastica_Status
+	 * @return Status
 	 */
 	protected function getStatus()
 	{
-		return $this->status ? : $this->status = new Elastica_Status($this->client);
+		return $this->status ? : $this->status = new Status($this->client);
 	}
 
 	/**
@@ -152,12 +152,12 @@ class IndexManager
 	}
 
 	/**
-	 * @param Elastica_Index $elasticaIndex
+	 * @param Index $elasticaIndex
 	 */
-	protected function setMapping(Elastica_Index $elasticaIndex)
+	protected function setMapping(Index $elasticaIndex)
 	{
 		foreach ($this->configuration->getTypes() as $typeName) {
-			$mapping = new Elastica_Type_Mapping();
+			$mapping = new Mapping();
 			$type    = $elasticaIndex->getType($typeName);
 			$mapping->setType($type);
 
@@ -185,7 +185,7 @@ class IndexManager
 	 *
 	 * @param bool $createIfMissing
 	 * @throws ElasticaManagerIndexNotFoundException
-	 * @return Elastica_Index
+	 * @return Index
 	 */
 	public function getIndex($createIfMissing = false)
 	{
@@ -202,7 +202,7 @@ class IndexManager
 	}
 
 	/**
-	 * @return Elastica_Index
+	 * @return Index
 	 * @throws ElasticaManagerIndexNotFoundException
 	 */
 	public function getIndexByAlias()
@@ -222,7 +222,7 @@ class IndexManager
 	 * @param bool $findIndexByAlias
 	 * @throws ElasticaManagerProviderIteratorException
 	 * @throws ElasticaManagerNoProviderDataException
-	 * @return Elastica_Index
+	 * @return Index
 	 */
 	public function populate($typeName = null, \Closure $closure = null, $deleteIfExists = true, $findIndexByAlias = false)
 	{
@@ -270,7 +270,7 @@ class IndexManager
 	 * @param $id
 	 * @param null $typeName
 	 * @param bool $findIndexByAlias
-	 * @return Elastica_Response
+	 * @return Response
 	 */
 	public function updateDocument($id, $typeName = null, $findIndexByAlias = false)
 	{
@@ -293,7 +293,7 @@ class IndexManager
 	 * @param $id
 	 * @param null $typeName
 	 * @param bool $findIndexByAlias
-	 * @return Elastica_Response
+	 * @return Response
 	 */
 	public function deleteDocument($id, $typeName = null, $findIndexByAlias = false)
 	{
@@ -316,7 +316,7 @@ class IndexManager
 	 * @param $elasticaIndex
 	 * @param $data
 	 * @param $typeName
-	 * @return Elastica_Response
+	 * @return Response
 	 * @throws ElasticaManagerProviderTransformException
 	 */
 	protected function transformAndAddDocument($elasticaIndex, $data, $typeName)
@@ -327,7 +327,7 @@ class IndexManager
 			throw new ElasticaManagerProviderTransformException($this->getIndexName());
 		}
 
-		$doc  = new Elastica_Document($providerDoc->getId(), $providerDoc->getData());
+		$doc  = new Document($providerDoc->getId(), $providerDoc->getData());
 		$type = $this->getType($elasticaIndex, $providerDoc->getTypeName());
 
 		return $type->addDocument($doc);
@@ -343,7 +343,7 @@ class IndexManager
 	/**
 	 * @param $aliasName
 	 * @param bool $replace OPTIONAL If set, an existing alias will be replaced
-	 * @return Elastica_Response
+	 * @return Response
 	 */
 	public function addAlias($aliasName, $replace = false)
 	{
@@ -369,7 +369,7 @@ class IndexManager
 	{
 		$status = static::getStatus();
 
-		/** @var $indexesWithAlias Elastica_index[] */
+		/** @var $indexesWithAlias Index[] */
 		$indexesWithAlias = $status->getIndicesWithAlias($aliasName);
 		foreach ($indexesWithAlias as $indexWithAlias) {
 			$indexWithAlias->removeAlias($aliasName);
@@ -378,7 +378,7 @@ class IndexManager
 
 	/**
 	 * @param bool $replace OPTIONAL If set, an existing alias will be replaced
-	 * @return Elastica_Response
+	 * @return Response
 	 */
 	public function addDefaultAlias($replace = false)
 	{
@@ -411,11 +411,11 @@ class IndexManager
 	}
 
 	/**
-	 * @param Elastica_Index $index
+	 * @param Index $index
 	 * @param null $typeName
-	 * @return Elastica_Type
+	 * @return Type
 	 */
-	protected function getType(Elastica_Index $index, $typeName)
+	protected function getType(Index $index, $typeName)
 	{
 		if (isset($this->types[$typeName])) {
 			return $this->types[$typeName];
