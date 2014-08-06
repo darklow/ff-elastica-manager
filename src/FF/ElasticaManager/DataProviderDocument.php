@@ -8,17 +8,20 @@ class DataProviderDocument
 	protected $typeName;
 
 	protected $data;
+	
+	protected $fields;
 
 	/**
 	 * @param $id mixed Document ID
 	 * @param $typeName string Document type name
 	 * @param $data array Document source array
 	 */
-	function __construct($id, $typeName, array $data)
+	function __construct($id, $typeName, array $data, array $fields = array())
 	{
 		$this->id       = $id;
 		$this->typeName = $typeName;
 		$this->data     = $data;
+		$this->fields   = $fields;
 	}
 
 	/**
@@ -49,5 +52,15 @@ class DataProviderDocument
 	public function getData()
 	{
 		return $this->data;
+	}
+	
+	/**
+	 * Document fields array
+	 *
+	 * @return array
+	 */
+	public function getFields()
+	{
+		return $this->fields;
 	}
 }

@@ -72,7 +72,8 @@ class Iterator
 		while (count($data['hits']['hits']) > 0) {
 			foreach ($data['hits']['hits'] as $item) {
 				$itemData = $item['_source'];
-				$doc      = new DataProviderDocument($item['_id'], $item['_type'], $itemData);
+				$itemFields = isset($item['fields']) ? $item['fields'] : array();
+				$doc      = new DataProviderDocument($item['_id'], $item['_type'], $itemData, $itemFields);
 				if ($break = $closure($doc, $i, $total)) {
 					break 2;
 				}
