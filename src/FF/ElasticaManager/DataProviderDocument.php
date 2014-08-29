@@ -35,6 +35,16 @@ class DataProviderDocument
 	}
 
 	/**
+	 * Document UID
+	 *
+	 * @return mixed
+	 */
+	public function getUid()
+	{
+		return $this->typeName.'#'.$this->id;
+	}	
+
+	/**
 	 * Document type name
 	 *
 	 * @return string
